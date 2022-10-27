@@ -5,6 +5,12 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var users = [
+      {'id': 1, 'name': 'Martin'},
+      {'id': 2, 'name': 'Jerivas'},
+      {'id': 3, 'name': 'Charly'},
+      {'id': 4, 'name': 'Hellsing'},
+    ];
     return Scaffold(
       backgroundColor: const Color(0xff1e234b),
       appBar: AppBar(
@@ -63,8 +69,8 @@ class HomePage extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Padding(
+                children: const [
+                  Padding(
                     padding: EdgeInsets.all(15.0),
                     child: Text(
                       'Lista de cuentas',
@@ -74,58 +80,12 @@ class HomePage extends StatelessWidget {
                           fontSize: 20.0),
                     ),
                   ),
-                  const SizedBox(
+                  SizedBox(
                     height: 15.0,
                   ),
                   Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Card(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Row(
-                            // ignore: prefer_const_literals_to_create_immutables
-                            children: [
-                              const CircleAvatar(
-                                backgroundColor: Color(0xffecedf6),
-                                // ignore: unnecessary_const
-                                child: const Text(
-                                  'A',
-                                  style: TextStyle(
-                                      color: Color(0xff1e234b),
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 60.0,
-                              ),
-                              const Text(
-                                'Amara',
-                                style: TextStyle(
-                                    color: Color(0xff1e234b),
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              IconButton(
-                                  onPressed: () {
-                                    print('pdf');
-                                  },
-                                  icon: const Icon(Icons.document_scanner)),
-                              IconButton(
-                                  onPressed: () {
-                                    print('pdf');
-                                  },
-                                  icon: const Icon(Icons.delete))
-                            ],
-                          )
-                        ],
-                      ),
-                    ),
+                    padding: EdgeInsets.all(8.0),
+                    child: accountsCardList(),
                   )
                 ],
               ),
@@ -133,6 +93,68 @@ class HomePage extends StatelessWidget {
           ),
         ],
       )),
+    );
+  }
+}
+
+class accountsCardList extends StatelessWidget {
+  const accountsCardList({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(
+    BuildContext context,
+  ) {
+    return GestureDetector(
+      onTap: (() {
+        Navigator.pushNamed(context, 'details');
+      }),
+      child: Card(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Row(
+              // ignore: prefer_const_literals_to_create_immutables
+              children: [
+                const CircleAvatar(
+                  backgroundColor: Color(0xffecedf6),
+                  // ignore: unnecessary_const
+                  child: const Text(
+                    'A',
+                    style: TextStyle(
+                        color: Color(0xff1e234b), fontWeight: FontWeight.bold),
+                  ),
+                ),
+                const SizedBox(
+                  width: 60.0,
+                ),
+                const Text(
+                  'Amara',
+                  style: TextStyle(
+                      color: Color(0xff1e234b), fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                IconButton(
+                    onPressed: () {
+                      print('pdf');
+                    },
+                    icon: const Icon(Icons.document_scanner)),
+                IconButton(
+                    onPressed: () {
+                      print('pdf');
+                    },
+                    icon: const Icon(Icons.delete))
+              ],
+            )
+          ],
+        ),
+      ),
     );
   }
 }
