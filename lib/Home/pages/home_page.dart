@@ -35,10 +35,17 @@ class HomePage extends StatelessWidget {
                     width: 220.0,
                     child: TextField(
                       decoration: InputDecoration(
-                        focusColor: Colors.white,
-                        // border: OutlineInputBorder(),
-                        hintText: 'Nombre de la cuenta',
-                      ),
+                          focusColor: Colors.white,
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white),
+                          ),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white),
+                          ),
+                          // fillColor: Colors.white,
+                          // border: OutlineInputBorder(),
+                          hintText: 'Nombre de la cuenta',
+                          hintStyle: TextStyle(color: Colors.white)),
                     ),
                   ),
                   IconButton(

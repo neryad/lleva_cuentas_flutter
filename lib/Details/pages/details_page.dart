@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 import '../../Home/pages/home_page.dart';
 
@@ -18,14 +19,24 @@ class _DetailsPageState extends State<DetailsPage> {
         elevation: 0,
         backgroundColor: const Color(0xff1e234b),
         // title: const Text('Amara'),
-        actions: const [
+        actions: [
           CircleAvatar(
             backgroundColor: Colors.white,
-            child: Text(
-              'A',
-              style: TextStyle(color: Color(0xff1e234b)),
+            child: IconButton(
+              color: const Color(0xff1e234b),
+              onPressed: () {
+                Navigator.pushNamed(context, 'amount');
+              },
+              icon: const Icon(Icons.add),
             ),
           )
+          // CircleAvatar(
+          //   backgroundColor: Colors.white,
+          //   child: Text(
+          //     'A',
+          //     style: TextStyle(color: Color(0xff1e234b)),
+          //   ),
+          // )
         ],
         leading: BackButton(
           onPressed: () {
@@ -88,7 +99,28 @@ class _DetailsPageState extends State<DetailsPage> {
                   const SizedBox(
                     height: 15.0,
                   ),
-                  Padding(padding: const EdgeInsets.all(8.0), child: card())
+                  Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          card(),
+                          // const SizedBox(
+                          //   height: 290,
+                          // ),
+                          // ElevatedButton(
+                          //     style: ElevatedButton.styleFrom(
+                          //         padding: const EdgeInsets.symmetric(
+                          //             horizontal: 50, vertical: 10),
+                          //         textStyle: const TextStyle(
+                          //             fontSize: 20,
+                          //             fontWeight: FontWeight.bold)),
+                          //     onPressed: () {},
+                          //     child: const Text('Agregar'))
+                        ],
+                      ))
                 ],
               ),
             ),
