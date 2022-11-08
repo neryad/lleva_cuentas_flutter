@@ -1,16 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:lleva_cuentas/Database/data_base_servie.dart';
+
+import '../../Database/account_model.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final dbHelper = DataBaseHelper.instance;
+    var test = Account(name: 'Charky');
+    dbHelper.newAccount(test);
+    dbHelper.getTest();
     var users = [
       {'id': 1, 'name': 'Martin'},
       {'id': 2, 'name': 'Jerivas'},
       {'id': 3, 'name': 'Charly'},
       {'id': 4, 'name': 'Hellsing'},
     ];
+    print(dbHelper);
     return Scaffold(
       backgroundColor: const Color(0xff1e234b),
       appBar: AppBar(
