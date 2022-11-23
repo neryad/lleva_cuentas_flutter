@@ -37,19 +37,21 @@ class DataBaseHelper {
   }
 
   _createDb(Database db, int version) async {
-    await db.execute(
-        'CREATE TABLE Test (id INTEGER PRIMARY KEY, name TEXT, value INTEGER, num REAL)');
+    await db
+        .execute('CREATE TABLE Accounts (id INTEGER PRIMARY KEY, name TEXT)');
   }
 
-  Future<List> getTest() async {
+  Future<List<Account>> getTest() async {
     Database db = await instance.database;
-    final res = await db.query('Test');
+    final res = await db.query('Accounts');
     print(res);
-    return res;
+    List<Account> accounts =
+        res.isNotEmpty ? res.map((e) => Account.fromJson(e)).toList() : [];
+    return accounts;
   }
 
   newAccount(Account account) async {
     Database db = await instance.database;
-    final res = await db.insert('Test', account.toJson());
+    final res = await db.insert('Accounts', account.toJson());
   }
 }
