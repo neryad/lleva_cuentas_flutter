@@ -1,12 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:lleva_cuentas/Amount/pages/models/transactions_model.dart';
+import 'package:lleva_cuentas/Database/account_model.dart';
+import 'package:lleva_cuentas/Database/data_base_servie.dart';
+// import 'package:intl/intl.dart';
 
-class AmountPage extends StatelessWidget {
-  const AmountPage({super.key});
+class AmountPage extends StatefulWidget {
+  const AmountPage({super.key, required this.account});
+  final Account account;
 
   @override
+  State<AmountPage> createState() => _AmountPageState();
+}
+
+class _AmountPageState extends State<AmountPage> {
+  String? dropdownValue = 'Ahorro';
+  final TextEditingController amountController = TextEditingController();
+  final TextEditingController comentController = TextEditingController();
+  final TextEditingController dateController = TextEditingController();
+  @override
   Widget build(BuildContext context) {
+    Account account = widget.account;
     // Initial Selected Value
-    String dropdownvalue = 'Ahorro';
+    // String? dropdownValue = 'Ahorro';
+    // final TextEditingController amountController = TextEditingController();
+    // final TextEditingController comentController = TextEditingController();
+    // final TextEditingController dateController = TextEditingController();
 
     // List of items in our dropdown menu
     var items = [
@@ -19,6 +38,11 @@ class AmountPage extends StatelessWidget {
         elevation: 0,
         backgroundColor: const Color(0xff1e234b),
         title: const Text('Nueva transacción'),
+        leading: BackButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
       ),
       body: Column(
         children: [
@@ -52,7 +76,7 @@ class AmountPage extends StatelessWidget {
                           ),
                           DropdownButton(
                             underline: const SizedBox.shrink(),
-                            value: dropdownvalue,
+                            value: dropdownValue,
                             items: items.map((String items) {
                               return DropdownMenuItem(
                                 value: items,
@@ -66,6 +90,8 @@ class AmountPage extends StatelessWidget {
                             }).toList(),
                             onChanged: ((value) {
                               print(value);
+                              dropdownValue = value.toString();
+                              print(dropdownValue);
                             }),
                           )
                         ],
@@ -75,15 +101,17 @@ class AmountPage extends StatelessWidget {
                       ),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          Text(
+                        children: [
+                          const Text(
                             'Monto',
                             style: TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.w500),
                           ),
                           TextField(
+                            controller: amountController,
                             keyboardType: TextInputType.number,
-                            style: TextStyle(fontSize: 25),
+                            style: const TextStyle(fontSize: 25),
+
                             // decoration: new InputDecoration(
                             //     labelText: "Enter your number"),
                           )
@@ -99,32 +127,61 @@ class AmountPage extends StatelessWidget {
                           const Text('Fecha transacción',
                               style: TextStyle(
                                   fontSize: 20, fontWeight: FontWeight.w500)),
-                          SizedBox(
+                          const SizedBox(
                             height: 10,
                           ),
-                          Row(children: [
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('04/11/2022',
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w500)),
-                                Row(
-                                  children: [
-                                    // Text('Tap para cambiar la fecha',
-                                    //     style: TextStyle(
-                                    //         fontSize: 20,
-                                    //         fontWeight: FontWeight.w500)),
-                                    IconButton(
-                                      onPressed: () {},
-                                      icon: Icon(Icons.calendar_month),
-                                    ),
-                                  ],
-                                )
-                              ],
-                            )
-                          ])
+                          TextField(
+                            controller: dateController,
+                            decoration: const InputDecoration(
+                                icon: Icon(Icons.calendar_today),
+                                labelText: 'Colocar fecha'),
+                            onTap: () async {
+                              DateTime? pickedDate = await showDatePicker(
+                                  context: context,
+                                  initialDate: DateTime.now(),
+                                  firstDate: DateTime(2000),
+                                  lastDate: DateTime(2101));
+
+                              if (pickedDate != null) {
+                                print(pickedDate);
+                                dateController.text = pickedDate.toString();
+
+                                // var inputFormat =
+                                //     DateFormat('yyyy-MM-dd HH:mm');
+                                // var inputDate = inputFormat.parse(_date);
+                                // var outputFormat = DateFormat('dd/MM/yyyy');
+                                String formattedDate =
+                                    DateFormat('dd-MM-yyyy').format(pickedDate);
+                                // setState(() {
+                                //   dateController.text = pickedDate.toString();
+                                // });
+                              }
+                            },
+                            readOnly: true,
+                          )
+                          // Row(children: [
+                          //   Row(
+                          //     crossAxisAlignment: CrossAxisAlignment.start,
+                          //     children: [
+                          //       Text('04/11/2022',
+                          //           style: TextStyle(
+                          //               fontSize: 20,
+                          //               fontWeight: FontWeight.w500)),
+                          //       Row(
+                          //         children: [
+                          //           // Text('Tap para cambiar la fecha',
+                          //           //     style: TextStyle(
+                          //           //         fontSize: 20,
+                          //           //         fontWeight: FontWeight.w500)),
+                          //           IconButton(
+                          //             onPressed: () {},
+                          //             icon: Icon(Icons.calendar_month),
+                          //           ),
+                          //         ],
+                          //       )
+                          //     ],
+                          //   )
+                          // ])
                         ],
                       ),
                       const SizedBox(
@@ -132,15 +189,17 @@ class AmountPage extends StatelessWidget {
                       ),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          Text(
+                        children: [
+                          const Text(
                             'Comentario',
                             style: TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.w500),
                           ),
                           TextField(
+                            controller: comentController,
                             keyboardType: TextInputType.text,
                             style: TextStyle(fontSize: 15),
+                            onChanged: (v) => comentController.text = v,
                             // decoration: new InputDecoration(
                             //     labelText: "Enter your number"),
                           )
@@ -158,7 +217,16 @@ class AmountPage extends StatelessWidget {
                                 style: ElevatedButton.styleFrom(
                                   primary: Color(0xff1e234b),
                                 ),
-                                onPressed: () {},
+                                onPressed: () {
+                                  var newTransaction = Transactions(
+                                      type: dropdownValue!,
+                                      amount:
+                                          double.parse(amountController.text),
+                                      date: dateController.text,
+                                      comment: comentController.text,
+                                      accountId: account.id!);
+                                  saveTransactions(newTransaction);
+                                },
                                 child: const Text(
                                   'Guardar',
                                   style: TextStyle(fontSize: 20),
@@ -175,5 +243,22 @@ class AmountPage extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  saveTransactions(Transactions transactions) {
+    if (transactions != null) {
+      print(transactions);
+      DataBaseHelper.instance.addTransaction(transactions);
+      clearController();
+      return;
+    }
+
+    print('Lo siento papu');
+  }
+
+  clearController() {
+    amountController.clear();
+    comentController.clear();
+    dateController.clear();
   }
 }

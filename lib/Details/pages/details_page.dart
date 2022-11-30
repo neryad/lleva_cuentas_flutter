@@ -1,18 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:lleva_cuentas/Amount/pages/amount_pages.dart';
+import 'package:lleva_cuentas/Amount/pages/models/transactions_model.dart';
+import 'package:lleva_cuentas/Database/account_model.dart';
+import 'package:lleva_cuentas/Database/data_base_servie.dart';
 
 import '../../Home/pages/home_page.dart';
 
 class DetailsPage extends StatefulWidget {
-  const DetailsPage({super.key});
+  const DetailsPage({super.key, required this.account});
+  final Account account;
 
   @override
   State<DetailsPage> createState() => _DetailsPageState();
 }
 
+@override
 class _DetailsPageState extends State<DetailsPage> {
   @override
+  void initState() {
+    //refresh the page here
+    super.initState();
+    setState(() {});
+  }
+
+  @override
   Widget build(BuildContext context) {
+    Account account = widget.account;
     return Scaffold(
       backgroundColor: const Color(0xff1e234b),
       appBar: AppBar(
@@ -25,7 +39,19 @@ class _DetailsPageState extends State<DetailsPage> {
             child: IconButton(
               color: const Color(0xff1e234b),
               onPressed: () {
-                Navigator.pushNamed(context, 'amount');
+                //Navigator.pushNamed(context, 'amount');
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => AmountPage(account: account)));
+                // var test = new Transactions(
+                //     type: 'Ahorro',
+                //     amount: 22,
+                //     date: '29-11-2022',
+                //     comment: 'comment',
+                //     accountId: 1);
+
+                // DataBaseHelper.instance.addTransaction(test);
               },
               icon: const Icon(Icons.add),
             ),
@@ -47,10 +73,10 @@ class _DetailsPageState extends State<DetailsPage> {
       body: Column(
         children: [
           Row(
-            children: const [
+            children: [
               Text(
-                'Total en la cuenta de Amara',
-                style: TextStyle(
+                'Total en la cuenta de ${account.name}',
+                style: const TextStyle(
                     color: Colors.white,
                     fontSize: 24,
                     fontWeight: FontWeight.w500),
@@ -106,7 +132,7 @@ class _DetailsPageState extends State<DetailsPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          card(),
+                          listCards(account),
                           // const SizedBox(
                           //   height: 290,
                           // ),
@@ -131,7 +157,37 @@ class _DetailsPageState extends State<DetailsPage> {
   }
 }
 
-Widget card() {
+Widget listCards(Account account) {
+  return FutureBuilder<List<Transactions>>(
+    future: DataBaseHelper.instance.getTransactionsById(account.id!),
+    builder: ((context, AsyncSnapshot<List<Transactions>> snapshot) {
+      if (!snapshot.hasData) {
+        return const Center(child: CircularProgressIndicator());
+      }
+      final transactions = snapshot.data;
+
+      if (transactions!.length == 0) {
+        return const Padding(
+          padding: EdgeInsets.all(8),
+          child: Center(
+            child: Text('No tienes transacciones registradas'),
+          ),
+        );
+      }
+
+      return ListView.builder(
+        scrollDirection: Axis.vertical,
+        itemCount: transactions.length,
+        shrinkWrap: true,
+        itemBuilder: (context, index) {
+          return card(transactions![index], context);
+        },
+      );
+    }),
+  );
+}
+
+Widget card(Transactions transactions, BuildContext context) {
   return Card(
     elevation: 0,
     child: Row(
@@ -152,9 +208,9 @@ Widget card() {
               width: 10.0,
             ),
             Column(
-              children: const [
+              children: [
                 Text(
-                  'Amara',
+                  transactions!.comment,
                   style: TextStyle(
                       color: Color(0xff1e234b), fontWeight: FontWeight.bold),
                 ),
@@ -162,7 +218,7 @@ Widget card() {
                   height: 5.0,
                 ),
                 Text(
-                  '10-27-2022',
+                  transactions!.date,
                   style: TextStyle(
                       color: Color(0xff1e234b), fontWeight: FontWeight.bold),
                 ),
@@ -174,8 +230,8 @@ Widget card() {
           children: [
             Column(
               children: [
-                const Text(
-                  '-35',
+                Text(
+                  transactions!.amount.toString(),
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                 ),
                 Row(
