@@ -25,7 +25,7 @@ class Transactions {
   String date;
   String comment;
   int accountId;
-
+  isSaving() => type == 'Ahorro';
   factory Transactions.fromJson(Map<String, dynamic> json) => Transactions(
         id: json["id"],
         type: json["type"],

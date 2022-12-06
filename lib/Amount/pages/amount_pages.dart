@@ -28,10 +28,7 @@ class _AmountPageState extends State<AmountPage> {
     // final TextEditingController dateController = TextEditingController();
 
     // List of items in our dropdown menu
-    var items = [
-      'Ahorro',
-      'Gasto',
-    ];
+    var items = ['Ahorro', 'Gasto'];
     return Scaffold(
       backgroundColor: const Color(0xff1e234b),
       appBar: AppBar(

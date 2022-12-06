@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 import 'package:lleva_cuentas/Amount/pages/amount_pages.dart';
 import 'package:lleva_cuentas/Amount/pages/models/transactions_model.dart';
 import 'package:lleva_cuentas/Database/account_model.dart';
@@ -15,6 +16,8 @@ class DetailsPage extends StatefulWidget {
   State<DetailsPage> createState() => _DetailsPageState();
 }
 
+var total;
+
 @override
 class _DetailsPageState extends State<DetailsPage> {
   @override
@@ -27,6 +30,7 @@ class _DetailsPageState extends State<DetailsPage> {
   @override
   Widget build(BuildContext context) {
     Account account = widget.account;
+
     return Scaffold(
       backgroundColor: const Color(0xff1e234b),
       appBar: AppBar(
@@ -44,25 +48,10 @@ class _DetailsPageState extends State<DetailsPage> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => AmountPage(account: account)));
-                // var test = new Transactions(
-                //     type: 'Ahorro',
-                //     amount: 22,
-                //     date: '29-11-2022',
-                //     comment: 'comment',
-                //     accountId: 1);
-
-                // DataBaseHelper.instance.addTransaction(test);
               },
               icon: const Icon(Icons.add),
             ),
           )
-          // CircleAvatar(
-          //   backgroundColor: Colors.white,
-          //   child: Text(
-          //     'A',
-          //     style: TextStyle(color: Color(0xff1e234b)),
-          //   ),
-          // )
         ],
         leading: BackButton(
           onPressed: () {
@@ -87,9 +76,9 @@ class _DetailsPageState extends State<DetailsPage> {
             height: 15,
           ),
           Row(
-            children: const [
-              Text('100,000',
-                  style: TextStyle(
+            children: [
+              Text(total.toString(),
+                  style: const TextStyle(
                       color: Colors.white,
                       fontSize: 50,
                       fontWeight: FontWeight.w800))
@@ -125,28 +114,11 @@ class _DetailsPageState extends State<DetailsPage> {
                   const SizedBox(
                     height: 15.0,
                   ),
-                  Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          listCards(account),
-                          // const SizedBox(
-                          //   height: 290,
-                          // ),
-                          // ElevatedButton(
-                          //     style: ElevatedButton.styleFrom(
-                          //         padding: const EdgeInsets.symmetric(
-                          //             horizontal: 50, vertical: 10),
-                          //         textStyle: const TextStyle(
-                          //             fontSize: 20,
-                          //             fontWeight: FontWeight.bold)),
-                          //     onPressed: () {},
-                          //     child: const Text('Agregar'))
-                        ],
-                      ))
+                  Expanded(
+                    child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: listCards(account)),
+                  )
                 ],
               ),
             ),
@@ -157,6 +129,16 @@ class _DetailsPageState extends State<DetailsPage> {
   }
 }
 
+// double getTotal(Iterable<Transactions> transactions) => transactions
+//     .map((e) => e.amount * (e.isSaving() ? 1 : -1))
+//     .reduce((value, element) => value + element);
+double getTotal(Iterable<Transactions>? transactions) =>
+    transactions?.isNotEmpty != true
+        ? 0
+        : transactions
+                ?.map((e) => e.amount * (e.isSaving() ? 1 : -1))
+                .reduce((value, element) => value + element) ??
+            0;
 Widget listCards(Account account) {
   return FutureBuilder<List<Transactions>>(
     future: DataBaseHelper.instance.getTransactionsById(account.id!),
@@ -166,6 +148,8 @@ Widget listCards(Account account) {
       }
       final transactions = snapshot.data;
 
+      total = getTotal(transactions!);
+      print(total);
       if (transactions!.length == 0) {
         return const Padding(
           padding: EdgeInsets.all(8),
@@ -178,7 +162,7 @@ Widget listCards(Account account) {
       return ListView.builder(
         scrollDirection: Axis.vertical,
         itemCount: transactions.length,
-        shrinkWrap: true,
+        // shrinkWrap: true,
         itemBuilder: (context, index) {
           return card(transactions![index], context);
         },
@@ -211,16 +195,19 @@ Widget card(Transactions transactions, BuildContext context) {
               children: [
                 Text(
                   transactions!.comment,
-                  style: TextStyle(
+                  style: const TextStyle(
                       color: Color(0xff1e234b), fontWeight: FontWeight.bold),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 5.0,
                 ),
                 Text(
-                  transactions!.date,
-                  style: TextStyle(
-                      color: Color(0xff1e234b), fontWeight: FontWeight.bold),
+                  DateFormat('MMM d, yyyy')
+                      .format(DateTime.parse(transactions!.date))
+                      .toString(),
+                  style: const TextStyle(
+                      color: const Color(0xff1e234b),
+                      fontWeight: FontWeight.bold),
                 ),
               ],
             )
@@ -230,10 +217,19 @@ Widget card(Transactions transactions, BuildContext context) {
           children: [
             Column(
               children: [
-                Text(
-                  transactions!.amount.toString(),
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                ),
+                transactions.type == 'Gasto'
+                    ? Text(
+                        '-' + transactions!.amount.toString(),
+                        style: const TextStyle(
+                            color: Colors.red,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600),
+                      )
+                    : Text(
+                        transactions!.amount.toString(),
+                        style: const TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.w600),
+                      ),
                 Row(
                   children: [
                     InkWell(
