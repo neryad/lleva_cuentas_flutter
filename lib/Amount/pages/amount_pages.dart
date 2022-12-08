@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:lleva_cuentas/Amount/pages/models/transactions_model.dart';
 import 'package:lleva_cuentas/Database/account_model.dart';
 import 'package:lleva_cuentas/Database/data_base_servie.dart';
+import 'package:lleva_cuentas/Details/pages/details_page.dart';
 // import 'package:intl/intl.dart';
 
 class AmountPage extends StatefulWidget {
@@ -36,8 +37,14 @@ class _AmountPageState extends State<AmountPage> {
         backgroundColor: const Color(0xff1e234b),
         title: const Text('Nueva transacción'),
         leading: BackButton(
-          onPressed: () {
-            Navigator.of(context).pop();
+          onPressed: () async {
+            await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (BuildContext context) =>
+                      DetailsPage(account: account),
+                ));
+            setState(() {});
           },
         ),
       ),
@@ -86,9 +93,7 @@ class _AmountPageState extends State<AmountPage> {
                               );
                             }).toList(),
                             onChanged: ((value) {
-                              print(value);
                               dropdownValue = value.toString();
-                              print(dropdownValue);
                             }),
                           )
                         ],
@@ -149,9 +154,9 @@ class _AmountPageState extends State<AmountPage> {
                                 // var outputFormat = DateFormat('dd/MM/yyyy');
                                 String formattedDate =
                                     DateFormat('dd-MM-yyyy').format(pickedDate);
-                                // setState(() {
-                                //   dateController.text = pickedDate.toString();
-                                // });
+                                setState(() {
+                                  dateController.text = pickedDate.toString();
+                                });
                               }
                             },
                             readOnly: true,

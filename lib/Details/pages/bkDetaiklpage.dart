@@ -16,13 +16,15 @@ class DetailsPage extends StatefulWidget {
   State<DetailsPage> createState() => _DetailsPageState();
 }
 
+var total;
+
 @override
 class _DetailsPageState extends State<DetailsPage> {
   @override
   void initState() {
     //refresh the page here
-
     super.initState();
+    setState(() {});
   }
 
   @override
@@ -64,6 +66,15 @@ class _DetailsPageState extends State<DetailsPage> {
               return const Center(child: CircularProgressIndicator());
             }
             final transactions = snapshot.data;
+            total = getTotal(transactions!);
+            if (transactions!.length == 0) {
+              return const Padding(
+                padding: EdgeInsets.all(8),
+                child: Center(
+                  child: Text('No tienes transacciones registradas'),
+                ),
+              );
+            }
 
             return Column(
               children: [
@@ -83,7 +94,7 @@ class _DetailsPageState extends State<DetailsPage> {
                 ),
                 Row(
                   children: [
-                    Text(getTotal(transactions!).toString(),
+                    Text(total.toString(),
                         style: const TextStyle(
                             color: Colors.white,
                             fontSize: 50,
@@ -123,7 +134,7 @@ class _DetailsPageState extends State<DetailsPage> {
                         Expanded(
                           child: Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: listCards(transactions)),
+                              child: listCards(account)),
                         )
                       ],
                     ),
@@ -136,6 +147,9 @@ class _DetailsPageState extends State<DetailsPage> {
   }
 }
 
+// double getTotal(Iterable<Transactions> transactions) => transactions
+//     .map((e) => e.amount * (e.isSaving() ? 1 : -1))
+//     .reduce((value, element) => value + element);
 double getTotal(Iterable<Transactions>? transactions) =>
     transactions?.isNotEmpty != true
         ? 0
@@ -143,22 +157,35 @@ double getTotal(Iterable<Transactions>? transactions) =>
                 ?.map((e) => e.amount * (e.isSaving() ? 1 : -1))
                 .reduce((value, element) => value + element) ??
             0;
-Widget listCards(List<Transactions>? transactions) {
-  if (transactions!.length == 0) {
-    return const Padding(
-      padding: EdgeInsets.all(8),
-      child: Center(
-        child: Text('No tienes transacciones registradas'),
-      ),
-    );
-  }
+Widget listCards(Account account) {
+  return FutureBuilder<List<Transactions>>(
+    future: DataBaseHelper.instance.getTransactionsById(account.id!),
+    builder: ((context, AsyncSnapshot<List<Transactions>> snapshot) {
+      if (!snapshot.hasData) {
+        return const Center(child: CircularProgressIndicator());
+      }
+      final transactions = snapshot.data;
 
-  return ListView.builder(
-    scrollDirection: Axis.vertical,
-    itemCount: transactions.length,
-    itemBuilder: (context, index) {
-      return card(transactions![index], context);
-    },
+      total = getTotal(transactions!);
+      print(total);
+      if (transactions!.length == 0) {
+        return const Padding(
+          padding: EdgeInsets.all(8),
+          child: Center(
+            child: Text('No tienes transacciones registradas'),
+          ),
+        );
+      }
+
+      return ListView.builder(
+        scrollDirection: Axis.vertical,
+        itemCount: transactions.length,
+        // shrinkWrap: true,
+        itemBuilder: (context, index) {
+          return card(transactions![index], context);
+        },
+      );
+    }),
   );
 }
 
