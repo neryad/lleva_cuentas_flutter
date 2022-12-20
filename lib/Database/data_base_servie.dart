@@ -59,8 +59,6 @@ class DataBaseHelper {
     final res = await db.insert('Accounts', account.toJson());
   }
 
-//TODO: arrelgar que sea por el id
-
   Future<List<Transactions>> getTransactionsById(int id) async {
     Database db = await instance.database;
     final res =
@@ -90,5 +88,22 @@ class DataBaseHelper {
   addTransaction(Transactions transactions) async {
     Database db = await instance.database;
     final res = await db.insert('Transactions', transactions.toJson());
+  }
+
+  Future<int> deleteAccount(int id) async {
+    final db = await instance.database;
+
+    final res = await db.delete('Accounts', where: 'id = ?', whereArgs: [id]);
+
+    return res;
+  }
+
+  Future<int> deleteTransaction(int id) async {
+    final db = await instance.database;
+
+    final res =
+        await db.delete('Transactions', where: 'id = ?', whereArgs: [id]);
+
+    return res;
   }
 }

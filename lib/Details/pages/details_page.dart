@@ -5,6 +5,7 @@ import 'package:lleva_cuentas/Amount/pages/amount_pages.dart';
 import 'package:lleva_cuentas/Amount/pages/models/transactions_model.dart';
 import 'package:lleva_cuentas/Database/account_model.dart';
 import 'package:lleva_cuentas/Database/data_base_servie.dart';
+import 'package:lleva_cuentas/Home/widgets/alert.dart';
 
 import '../../Home/pages/home_page.dart';
 
@@ -134,150 +135,128 @@ class _DetailsPageState extends State<DetailsPage> {
           })),
     );
   }
-}
 
-double getTotal(Iterable<Transactions>? transactions) =>
-    transactions?.isNotEmpty != true
-        ? 0
-        : transactions
-                ?.map((e) => e.amount * (e.isSaving() ? 1 : -1))
-                .reduce((value, element) => value + element) ??
-            0;
-Widget listCards(List<Transactions>? transactions) {
-  if (transactions!.length == 0) {
-    return const Padding(
-      padding: EdgeInsets.all(8),
-      child: Center(
-        child: Text('No tienes transacciones registradas'),
-      ),
+  double getTotal(Iterable<Transactions>? transactions) =>
+      transactions?.isNotEmpty != true
+          ? 0
+          : transactions
+                  ?.map((e) => e.amount * (e.isSaving() ? 1 : -1))
+                  .reduce((value, element) => value + element) ??
+              0;
+  Widget listCards(List<Transactions>? transactions) {
+    if (transactions!.length == 0) {
+      return const Padding(
+        padding: EdgeInsets.all(8),
+        child: Center(
+          child: Text('No tienes transacciones registradas'),
+        ),
+      );
+    }
+
+    return ListView.builder(
+      scrollDirection: Axis.vertical,
+      itemCount: transactions.length,
+      itemBuilder: (context, index) {
+        return card(transactions![index], context);
+      },
     );
   }
 
-  return ListView.builder(
-    scrollDirection: Axis.vertical,
-    itemCount: transactions.length,
-    itemBuilder: (context, index) {
-      return card(transactions![index], context);
-    },
-  );
-}
-
-Widget card(Transactions transactions, BuildContext context) {
-  return Card(
-    elevation: 0,
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Row(
-          // ignore: prefer_const_literals_to_create_immutables
-          children: [
-            const CircleAvatar(
-                backgroundColor: Color(0xffecedf6),
-                // ignore: unnecessary_const
-                child: Icon(
-                  Icons.arrow_circle_down_rounded,
-                  color: Color(0xff1e234b),
-                )),
-            const SizedBox(
-              width: 10.0,
-            ),
-            Column(
-              children: [
-                Text(
-                  transactions!.comment,
-                  style: const TextStyle(
-                      color: Color(0xff1e234b), fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(
-                  height: 5.0,
-                ),
-                Text(
-                  DateFormat('MMM d, yyyy')
-                      .format(DateTime.parse(transactions!.date))
-                      .toString(),
-                  style: const TextStyle(
-                      color: const Color(0xff1e234b),
-                      fontWeight: FontWeight.bold),
-                ),
-              ],
-            )
-          ],
-        ),
-        Row(
-          children: [
-            Column(
-              children: [
-                transactions.type == 'Gasto'
-                    ? Text(
-                        '-' + transactions!.amount.toString(),
-                        style: const TextStyle(
-                            color: Colors.red,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600),
-                      )
-                    : Text(
-                        transactions!.amount.toString(),
-                        style: const TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.w600),
+  card(Transactions transactions, BuildContext context) {
+    return Card(
+      elevation: 0,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Row(
+            // ignore: prefer_const_literals_to_create_immutables
+            children: [
+              const CircleAvatar(
+                  backgroundColor: Color(0xffecedf6),
+                  // ignore: unnecessary_const
+                  child: Icon(
+                    Icons.monetization_on_outlined,
+                    color: Color(0xff1e234b),
+                  )),
+              const SizedBox(
+                width: 10.0,
+              ),
+              Column(
+                children: [
+                  Text(
+                    transactions!.comment,
+                    style: const TextStyle(
+                        color: Color(0xff1e234b), fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(
+                    height: 5.0,
+                  ),
+                  Text(
+                    DateFormat('MMM d, yyyy')
+                        .format(DateTime.parse(transactions!.date))
+                        .toString(),
+                    style: const TextStyle(
+                        color: const Color(0xff1e234b),
+                        fontWeight: FontWeight.bold),
+                  ),
+                ],
+              )
+            ],
+          ),
+          Row(
+            children: [
+              Column(
+                children: [
+                  transactions.type == 'Gasto'
+                      ? Text(
+                          '-' + transactions!.amount.toString(),
+                          style: const TextStyle(
+                              color: Colors.red,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600),
+                        )
+                      : Text(
+                          transactions!.amount.toString(),
+                          style: const TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.w600),
+                        ),
+                  Row(
+                    children: [
+                      InkWell(
+                          child: const Icon(
+                            Icons.edit,
+                            size: 18,
+                          ),
+                          onTap: () {
+                            print('tapped');
+                            setState(() {});
+                          }),
+                      const SizedBox(
+                        width: 10,
                       ),
-                Row(
-                  children: [
-                    InkWell(
-                        child: const Icon(
-                          Icons.edit,
-                          size: 18,
-                        ),
-                        onTap: () {
-                          print('tapped');
-                        }),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    InkWell(
-                        child: const Icon(
-                          Icons.delete,
-                          size: 18,
-                        ),
-                        onTap: () {
-                          print('tapped');
-                        }),
-                    // TextButton(
-                    //   onPressed: () {
-                    //     print('pdf');
-                    //   },
-                    //   child: Icon(Icons.abc),
-                    // ),
-                    // TextButton(
-                    //   onPressed: () {
-                    //     print('pdf');
-                    //   },
-                    //   style:
-                    //       TextButton.styleFrom(fixedSize: Size.fromHeight(2)),
-                    //   child: Icon(Icons.abc),
-                    // ),
-                  ],
-                )
-              ],
-            )
-
-            // Column(
-            //   children: [
-            //     IconButton(
-            //         onPressed: () {
-            //           print('pdf');
-            //         },
-            //         icon: const Icon(Icons.document_scanner)),
-            //     IconButton(
-            //         onPressed: () {
-            //           print('pdf');
-            //         },
-            //         icon: const Icon(Icons.delete))
-            //   ],
-            // )
-          ],
-        ),
-      ],
-    ),
-  );
+                      InkWell(
+                          child: const Icon(
+                            Icons.delete,
+                            size: 18,
+                            color: Colors.red,
+                          ),
+                          onTap: () async {
+                            await deleteAlert(
+                                context,
+                                "Seguro de borrar la Transacción",
+                                transactions!.id,
+                                'Transactions');
+                            setState(() {});
+                          }),
+                    ],
+                  )
+                ],
+              )
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 }

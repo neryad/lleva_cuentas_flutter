@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lleva_cuentas/Database/data_base_servie.dart';
 import 'package:lleva_cuentas/Details/pages/details_page.dart';
-
+import 'package:lleva_cuentas/Home/widgets/alert.dart';
 import '../../Database/account_model.dart';
 
 class HomePage extends StatefulWidget {
@@ -198,61 +198,69 @@ class _HomePageState extends State<HomePage> {
       // ),
     );
   }
-}
 
-Widget cardAccount(Account account, BuildContext context) {
-  return GestureDetector(
-    onTap: (() {
-      // Navigator.pushNamed(context, 'details');
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => DetailsPage(account: account)));
-    }),
-    child: Card(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Row(
-            // ignore: prefer_const_literals_to_create_immutables
-            children: [
-              CircleAvatar(
-                backgroundColor: Color(0xffecedf6),
-                // ignore: unnecessary_const
-                child: Text(
-                  account!.name[0].toUpperCase(),
+  Widget cardAccount(Account account, BuildContext context) {
+    return GestureDetector(
+      onTap: (() {
+        // Navigator.pushNamed(context, 'details');
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => DetailsPage(account: account)));
+      }),
+      child: Card(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Row(
+              // ignore: prefer_const_literals_to_create_immutables
+              children: [
+                CircleAvatar(
+                  backgroundColor: Color(0xffecedf6),
+                  // ignore: unnecessary_const
+                  child: Text(
+                    account!.name[0].toUpperCase(),
+                    style: TextStyle(
+                        color: Color(0xff1e234b), fontWeight: FontWeight.bold),
+                  ),
+                ),
+                const SizedBox(
+                  width: 60.0,
+                ),
+                Text(
+                  account!.name,
                   style: TextStyle(
                       color: Color(0xff1e234b), fontWeight: FontWeight.bold),
                 ),
-              ),
-              const SizedBox(
-                width: 60.0,
-              ),
-              Text(
-                account!.name,
-                style: TextStyle(
-                    color: Color(0xff1e234b), fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              IconButton(
-                  onPressed: () {
-                    print('pdf');
-                  },
-                  icon: const Icon(Icons.document_scanner)),
-              IconButton(
-                  onPressed: () {
-                    print('pdf');
-                  },
-                  icon: const Icon(Icons.delete))
-            ],
-          )
-        ],
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                IconButton(
+                    onPressed: () {
+                      print('pdf');
+                    },
+                    icon: const Icon(Icons.document_scanner)),
+                IconButton(
+                    onPressed: () {
+                      setState(() {
+                        deleteAlert(context, 'Seguro de eliminar la cuenta?',
+                            account.id!, 'Accounts');
+                      });
+
+                      // _deleteAlert();
+                    },
+                    icon: const Icon(
+                      Icons.delete,
+                      color: Colors.red,
+                    ))
+              ],
+            )
+          ],
+        ),
       ),
-    ),
-  );
+    );
+  }
 }
