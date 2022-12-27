@@ -38,6 +38,9 @@ dependencies:
   pdf: ^3.8.3
   path_provider: ^2.0.11
   intl: ^0.17.0
+  open_file: ^3.2.1
+  share_plus:
+
 
 dev_dependencies:
   flutter_test:

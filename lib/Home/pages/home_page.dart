@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:lleva_cuentas/Database/data_base_servie.dart';
 import 'package:lleva_cuentas/Details/pages/details_page.dart';
 import 'package:lleva_cuentas/Home/widgets/alert.dart';
+import 'package:lleva_cuentas/utils/pdf.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../Database/account_model.dart';
 
 class HomePage extends StatefulWidget {
@@ -239,7 +241,10 @@ class _HomePageState extends State<HomePage> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 IconButton(
-                    onPressed: () {
+                    onPressed: () async {
+                      final pdf = await ApiPdf.generaPdf(account.id!);
+                      // await Share.shareFiles([pdf.path]);
+                      ApiPdf.openFile(pdf);
                       print('pdf');
                     },
                     icon: const Icon(Icons.document_scanner)),

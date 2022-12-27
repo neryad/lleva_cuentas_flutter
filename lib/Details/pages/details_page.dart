@@ -65,7 +65,7 @@ class _DetailsPageState extends State<DetailsPage> {
               return const Center(child: CircularProgressIndicator());
             }
             final transactions = snapshot.data;
-
+            transactions!.sort(((a, b) => b.date.compareTo(a.date)));
             return Column(
               children: [
                 Row(

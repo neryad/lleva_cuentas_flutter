@@ -59,11 +59,20 @@ class DataBaseHelper {
     final res = await db.insert('Accounts', account.toJson());
   }
 
+  Future<Account?> getAccountById(int id) async {
+    Database db = await instance.database;
+    final res = await db.query('Accounts', where: 'id=?', whereArgs: [id]);
+    Account account = res.isNotEmpty
+        ? res.map((e) => Account.fromJson(e)).first
+        : [] as Account;
+    return account;
+  }
+
   Future<List<Transactions>> getTransactionsById(int id) async {
     Database db = await instance.database;
     final res =
         await db.query('Transactions', where: 'accountId=?', whereArgs: [id]);
-    print(res);
+
     List<Transactions> transactions =
         res.isNotEmpty ? res.map((e) => Transactions.fromJson(e)).toList() : [];
     return transactions;
