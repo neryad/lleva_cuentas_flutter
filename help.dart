@@ -7,8 +7,6 @@ import 'package:lleva_cuentas/Database/account_model.dart';
 import 'package:lleva_cuentas/Database/data_base_servie.dart';
 import 'package:lleva_cuentas/Home/widgets/alert.dart';
 
-import '../../Home/pages/home_page.dart';
-
 class DetailsPage extends StatefulWidget {
   const DetailsPage({super.key, required this.account});
   final Account account;
@@ -19,16 +17,16 @@ class DetailsPage extends StatefulWidget {
 
 @override
 class _DetailsPageState extends State<DetailsPage> {
-  String dropDownValue = 'Ahorro';
-  final items = ['Ahorro', 'Gasto'];
-  final TextEditingController dateController = TextEditingController();
-  final editFormKey = GlobalKey<FormState>();
-  @override
-  void initState() {
-    //refresh the page here
+  // @override
+  // void initState() {
+  //   //refresh the page here
 
-    super.initState();
-  }
+  //   super.initState();
+  // }
+  String dropdownValue = 'Ahorro';
+  final items = ['Ahorro', 'Gasto'];
+  final editFormKey = GlobalKey<FormState>();
+  final TextEditingController dateController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -58,8 +56,6 @@ class _DetailsPageState extends State<DetailsPage> {
         ],
         leading: BackButton(
           onPressed: () {
-            // Navigator.push(context,
-            //     MaterialPageRoute(builder: (context) => const HomePage()));
             Navigator.of(context).pop();
           },
         ),
@@ -130,7 +126,7 @@ class _DetailsPageState extends State<DetailsPage> {
                         Expanded(
                           child: Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: listCards(transactions)),
+                              child: listCards(transactions, account)),
                         )
                       ],
                     ),
@@ -149,7 +145,8 @@ class _DetailsPageState extends State<DetailsPage> {
                   ?.map((e) => e.amount * (e.isSaving() ? 1 : -1))
                   .reduce((value, element) => value + element) ??
               0;
-  Widget listCards(List<Transactions>? transactions) {
+
+  Widget listCards(List<Transactions>? transactions, Account account) {
     if (transactions!.length == 0) {
       return const Padding(
         padding: EdgeInsets.all(8),
@@ -163,12 +160,12 @@ class _DetailsPageState extends State<DetailsPage> {
       scrollDirection: Axis.vertical,
       itemCount: transactions.length,
       itemBuilder: (context, index) {
-        return card(transactions![index], context);
+        return card(transactions![index], context, account);
       },
     );
   }
 
-  card(Transactions transactions, BuildContext context) {
+  card(Transactions transactions, BuildContext context, Account account) {
     return Card(
       elevation: 0,
       child: Row(
@@ -236,8 +233,13 @@ class _DetailsPageState extends State<DetailsPage> {
                           ),
                           onTap: () {
                             editAlert(context, transactions);
-
-                            setState(() {});
+                            setState(() {
+                              // Navigator.push(
+                              //     context,
+                              //     MaterialPageRoute(
+                              //         builder: (context) => EditAmountPage(
+                              //             transaction: transactions)));
+                            });
                           }),
                       const SizedBox(
                         width: 10,
@@ -268,88 +270,82 @@ class _DetailsPageState extends State<DetailsPage> {
   }
 
   Future editAlert(BuildContext context, Transactions transaction) async {
+    // final _editFormKey = GlobalKey<FormState>();
     showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Editar transacción'),
-          content: StatefulBuilder(
-            builder: (context, setState) {
-              return Form(
-                key: editFormKey,
-                child: SingleChildScrollView(
+        context: context,
+        // barrierDismissible: false,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Editar transacción'),
+            content: StatefulBuilder(
+              builder: (context, setState) {
+                return Form(
+                  key: editFormKey,
                   child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      editDescription(transaction),
-                      editAmount(transaction),
-                      editType(transaction, setState),
-                      editDate(transaction),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
-          actions: [
-            TextButton(
-                onPressed: () {
-                  setState(() {
-                    editSubmit(transaction);
-                  });
-                  Navigator.of(context).pop();
-                },
-                child: const Text('Guardar')),
-            TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text('Cancelar'))
-          ],
-        );
-      },
-    );
+                      //mainAxisSize: MainAxisSize.min,
+                      children: [
+                        editDescription(transaction),
+                        editDate(transaction),
+                        editAmount(transaction),
+                        editType(transaction, setState)
+                      ]),
+                );
+              },
+            ),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    _editDubimt(transaction);
+                  },
+                  child: Text('guardar'))
+            ],
+          );
+        });
+  }
+
+  void _editDubimt(Transactions transaction) {
+    editFormKey.currentState!.save();
+    // DBProvider.db.updateProd(articulos[index]);
   }
 
   editDescription(Transactions transaction) {
     return TextFormField(
       initialValue: transaction.comment,
       textCapitalization: TextCapitalization.sentences,
-      onSaved: ((newValue) => transaction.comment = newValue!),
+      onSaved: (value) => transaction.comment = value!,
     );
   }
 
   editAmount(Transactions transaction) {
     return TextFormField(
-      initialValue: transaction.amount.toString(),
       keyboardType: TextInputType.number,
-      onSaved: ((newValue) => transaction.amount = double.parse(newValue!)),
+      initialValue: transaction.amount.toString(),
+      textCapitalization: TextCapitalization.sentences,
+      onSaved: (value) => transaction.amount = double.parse(value!),
     );
   }
 
   editDate(Transactions transaction) {
-    var currentYear = DateTime.now().year;
-    var distanceYear = currentYear + 100;
     var date = DateTime.parse(transaction.date);
-    // var date = DateTime.now();
-    dateController.text = DateFormat('dd-MM-yyyy').format(date);
+    dateController.text = DateFormat('dd-MM-yyyy').format(date).toString();
     return TextFormField(
+      keyboardType: TextInputType.datetime,
       readOnly: true,
       controller: dateController,
-      onSaved: (String? newValue) => dateController.text = newValue!,
+      textCapitalization: TextCapitalization.sentences,
+      onSaved: (value) => transaction.date = dateController.text!,
       onTap: () async {
         DateTime? pickedDate = await showDatePicker(
             context: context,
             initialDate: DateTime.now(),
-            firstDate: DateTime(currentYear),
-            lastDate: DateTime(distanceYear));
+            firstDate: DateTime(2023),
+            lastDate: DateTime(2101));
 
         if (pickedDate != null) {
-          //dateController.text = pickedDate.toString();
+          dateController.text = pickedDate.toString();
           String formattedDate = DateFormat('dd-MM-yyyy').format(pickedDate);
           setState(() {
-            transaction.date = pickedDate.toString();
+            dateController.text = formattedDate.toString();
           });
         }
       },
@@ -357,24 +353,28 @@ class _DetailsPageState extends State<DetailsPage> {
   }
 
   editType(Transactions transaction, StateSetter setState) {
-    dropDownValue = transaction.type;
-    return SizedBox(
+    //dropdownValue = transaction.type;
+    return Container(
       width: MediaQuery.of(context).size.width,
       child: DropdownButton(
-        value: transaction.type,
-        onChanged: ((String? value) => setState(() {
-              transaction.type = value!;
-            })),
+        value: dropdownValue,
+        underline: const SizedBox.shrink(),
+        onChanged: ((String? value) {
+          setState((() => dropdownValue = value!));
+          // setState(() {
+          //   dropdownValue = value!;
+          // });
+          // dropdownValue = value.toString();
+        }),
         items: items.map((String items) {
-          return DropdownMenuItem(value: items, child: Text(items));
+          return DropdownMenuItem(
+            value: items,
+            child: Text(
+              items,
+            ),
+          );
         }).toList(),
       ),
     );
-  }
-
-  editSubmit(Transactions transaction) async {
-    editFormKey.currentState!.save();
-    await DataBaseHelper.instance.updateTransaction(transaction);
-    setState(() {});
   }
 }

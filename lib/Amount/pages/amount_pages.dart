@@ -37,13 +37,16 @@ class _AmountPageState extends State<AmountPage> {
         backgroundColor: const Color(0xff1e234b),
         title: const Text('Nueva transacción'),
         leading: BackButton(
-          onPressed: () async {
-            await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (BuildContext context) =>
-                      DetailsPage(account: account),
-                ));
+          onPressed: () {
+            // await Navigator.push(
+            //   context,
+            //   MaterialPageRoute(
+            //     builder: (BuildContext context) =>
+            //         DetailsPage(account: account),
+            //   ),
+            // );
+            Navigator.of(context).pop();
+
             setState(() {});
           },
         ),
@@ -93,7 +96,9 @@ class _AmountPageState extends State<AmountPage> {
                               );
                             }).toList(),
                             onChanged: ((value) {
-                              dropdownValue = value.toString();
+                              setState(() {
+                                dropdownValue = value.toString();
+                              });
                             }),
                           )
                         ],
@@ -145,7 +150,6 @@ class _AmountPageState extends State<AmountPage> {
                                   lastDate: DateTime(2101));
 
                               if (pickedDate != null) {
-                                print(pickedDate);
                                 dateController.text = pickedDate.toString();
 
                                 // var inputFormat =
@@ -199,7 +203,7 @@ class _AmountPageState extends State<AmountPage> {
                           ),
                           TextField(
                             controller: comentController,
-                            keyboardType: TextInputType.text,
+                            //keyboardType: TextInputType.text,
                             style: TextStyle(fontSize: 15),
                             onChanged: (v) => comentController.text = v,
                             // decoration: new InputDecoration(
@@ -249,13 +253,10 @@ class _AmountPageState extends State<AmountPage> {
 
   saveTransactions(Transactions transactions) {
     if (transactions != null) {
-      print(transactions);
       DataBaseHelper.instance.addTransaction(transactions);
       clearController();
       return;
     }
-
-    print('Lo siento papu');
   }
 
   clearController() {

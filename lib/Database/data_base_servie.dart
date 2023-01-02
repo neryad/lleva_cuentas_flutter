@@ -48,7 +48,7 @@ class DataBaseHelper {
   Future<List<Account>> getTest() async {
     Database db = await instance.database;
     final res = await db.query('Accounts');
-    print(res);
+
     List<Account> accounts =
         res.isNotEmpty ? res.map((e) => Account.fromJson(e)).toList() : [];
     return accounts;
@@ -68,6 +68,15 @@ class DataBaseHelper {
     return account;
   }
 
+  Future<Transactions> getTransactionById(int id) async {
+    Database db = await instance.database;
+    final res = await db.query('Transactions', where: 'id=?', whereArgs: [id]);
+    Transactions transactions = res.isNotEmpty
+        ? res.map((e) => Transactions.fromJson(e)).first
+        : [] as Transactions;
+    return transactions;
+  }
+
   Future<List<Transactions>> getTransactionsById(int id) async {
     Database db = await instance.database;
     final res =
@@ -77,18 +86,11 @@ class DataBaseHelper {
         res.isNotEmpty ? res.map((e) => Transactions.fromJson(e)).toList() : [];
     return transactions;
   }
-  // Future<List<ProductModel>> getArticlesTmp(String id) async {
-  //   final db = await database;
-  //   final res = await db.query('product', where: 'listId=?', whereArgs: [id]);
 
-  //   List<ProductModel> art =
-  //       res.isNotEmpty ? res.map((e) => ProductModel.fromJson(e)).toList() : [];
-  //   return art;
-  // }
   Future<List<Transactions>> getTransactions() async {
     Database db = await instance.database;
     final res = await db.query('Transactions');
-    print(res);
+
     List<Transactions> transactions =
         res.isNotEmpty ? res.map((e) => Transactions.fromJson(e)).toList() : [];
     return transactions;
@@ -103,7 +105,7 @@ class DataBaseHelper {
     final db = await instance.database;
 
     final res = await db.delete('Accounts', where: 'id = ?', whereArgs: [id]);
-
+    await deleteTransaction(id);
     return res;
   }
 
@@ -111,7 +113,25 @@ class DataBaseHelper {
     final db = await instance.database;
 
     final res =
+        await db.delete('Transactions', where: 'accountId=?', whereArgs: [id]);
+
+    return res;
+  }
+
+  Future<int> deleteTransactionByAccountId(int id) async {
+    final db = await instance.database;
+
+    final res =
         await db.delete('Transactions', where: 'id = ?', whereArgs: [id]);
+
+    return res;
+  }
+
+  updateTransaction(Transactions transaction) async {
+    final db = await instance.database;
+
+    final res = await db.update('Transactions', transaction.toJson(),
+        where: 'id = ?', whereArgs: [transaction.id]);
 
     return res;
   }

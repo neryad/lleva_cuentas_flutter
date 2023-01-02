@@ -32,7 +32,7 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: const Color(0xff1e234b),
-        title: const Text('hola'),
+        // title: const Text('hola'),
       ),
       body: Container(
           child: Column(
@@ -152,52 +152,6 @@ class _HomePageState extends State<HomePage> {
           },
         );
       },
-      // child: Card(
-      //   child: Row(
-      //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      //     crossAxisAlignment: CrossAxisAlignment.center,
-      //     children: [
-      //       Row(
-      //         // ignore: prefer_const_literals_to_create_immutables
-      //         children: [
-      //           const CircleAvatar(
-      //             backgroundColor: Color(0xffecedf6),
-      //             // ignore: unnecessary_const
-      //             child: const Text(
-      //               'A',
-      //               style: TextStyle(
-      //                   color: Color(0xff1e234b),
-      //                   fontWeight: FontWeight.bold),
-      //             ),
-      //           ),
-      //           const SizedBox(
-      //             width: 60.0,
-      //           ),
-      //           const Text(
-      //             'Amara',
-      //             style: TextStyle(
-      //                 color: Color(0xff1e234b), fontWeight: FontWeight.bold),
-      //           ),
-      //         ],
-      //       ),
-      //       Row(
-      //         mainAxisAlignment: MainAxisAlignment.end,
-      //         children: [
-      //           IconButton(
-      //               onPressed: () {
-      //                 print('pdf');
-      //               },
-      //               icon: const Icon(Icons.document_scanner)),
-      //           IconButton(
-      //               onPressed: () {
-      //                 print('pdf');
-      //               },
-      //               icon: const Icon(Icons.delete))
-      //         ],
-      //       )
-      //     ],
-      //   ),
-      // ),
     );
   }
 
@@ -245,7 +199,6 @@ class _HomePageState extends State<HomePage> {
                       final pdf = await ApiPdf.generaPdf(account.id!);
                       // await Share.shareFiles([pdf.path]);
                       ApiPdf.openFile(pdf);
-                      print('pdf');
                     },
                     icon: const Icon(Icons.document_scanner)),
                 IconButton(
