@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:lleva_cuentas/Amount/pages/amount_pages.dart';
 import 'package:lleva_cuentas/Amount/pages/models/transactions_model.dart';
 import 'package:lleva_cuentas/Database/account_model.dart';
 import 'package:lleva_cuentas/Database/data_base_servie.dart';
 import 'package:lleva_cuentas/Home/widgets/alert.dart';
-
-import '../../Home/pages/home_page.dart';
 
 class DetailsPage extends StatefulWidget {
   const DetailsPage({super.key, required this.account});
@@ -48,9 +45,12 @@ class _DetailsPageState extends State<DetailsPage> {
               onPressed: () {
                 //Navigator.pushNamed(context, 'amount');
                 Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => AmountPage(account: account)));
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => AmountPage(account: account)))
+                    .then((value) {
+                  setState(() {});
+                });
               },
               icon: const Icon(Icons.add),
             ),
@@ -73,11 +73,13 @@ class _DetailsPageState extends State<DetailsPage> {
             final transactions = snapshot.data;
             transactions!.sort(((a, b) => b.date.compareTo(a.date)));
             return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Total en la cuenta de ${account.name}',
+                      'Total ${account.name}',
                       style: const TextStyle(
                           color: Colors.white,
                           fontSize: 24,
@@ -89,8 +91,9 @@ class _DetailsPageState extends State<DetailsPage> {
                   height: 15,
                 ),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(getTotal(transactions!).toString(),
+                    Text(getTotal(transactions).toString(),
                         style: const TextStyle(
                             color: Colors.white,
                             fontSize: 50,
@@ -117,7 +120,7 @@ class _DetailsPageState extends State<DetailsPage> {
                         const Padding(
                           padding: EdgeInsets.all(15.0),
                           child: Text(
-                            'Lista de cuentas',
+                            'Listado de transacciones',
                             style: TextStyle(
                                 color: Color(0xff1e234b),
                                 fontWeight: FontWeight.bold,
@@ -150,7 +153,7 @@ class _DetailsPageState extends State<DetailsPage> {
                   .reduce((value, element) => value + element) ??
               0;
   Widget listCards(List<Transactions>? transactions) {
-    if (transactions!.length == 0) {
+    if (transactions!.isEmpty) {
       return const Padding(
         padding: EdgeInsets.all(8),
         child: Center(
@@ -163,7 +166,7 @@ class _DetailsPageState extends State<DetailsPage> {
       scrollDirection: Axis.vertical,
       itemCount: transactions.length,
       itemBuilder: (context, index) {
-        return card(transactions![index], context);
+        return card(transactions[index], context);
       },
     );
   }
@@ -191,7 +194,7 @@ class _DetailsPageState extends State<DetailsPage> {
               Column(
                 children: [
                   Text(
-                    transactions!.comment,
+                    transactions.comment,
                     style: const TextStyle(
                         color: Color(0xff1e234b), fontWeight: FontWeight.bold),
                   ),
@@ -200,11 +203,10 @@ class _DetailsPageState extends State<DetailsPage> {
                   ),
                   Text(
                     DateFormat('MMM d, yyyy')
-                        .format(DateTime.parse(transactions!.date))
+                        .format(DateTime.parse(transactions.date))
                         .toString(),
                     style: const TextStyle(
-                        color: const Color(0xff1e234b),
-                        fontWeight: FontWeight.bold),
+                        color: Color(0xff1e234b), fontWeight: FontWeight.bold),
                   ),
                 ],
               )
@@ -216,14 +218,14 @@ class _DetailsPageState extends State<DetailsPage> {
                 children: [
                   transactions.type == 'Gasto'
                       ? Text(
-                          '-' + transactions!.amount.toString(),
+                          '-${transactions.amount}',
                           style: const TextStyle(
                               color: Colors.red,
                               fontSize: 18,
                               fontWeight: FontWeight.w600),
                         )
                       : Text(
-                          transactions!.amount.toString(),
+                          transactions.amount.toString(),
                           style: const TextStyle(
                               fontSize: 18, fontWeight: FontWeight.w600),
                         ),
@@ -252,7 +254,7 @@ class _DetailsPageState extends State<DetailsPage> {
                             await deleteAlert(
                                 context,
                                 "Seguro de borrar la Transacción",
-                                transactions!.id,
+                                transactions.id,
                                 'Transactions');
                             setState(() {});
                           }),
@@ -332,9 +334,10 @@ class _DetailsPageState extends State<DetailsPage> {
     var currentYear = DateTime.now().year;
     var distanceYear = currentYear + 100;
     var date = DateTime.parse(transaction.date);
-    // var date = DateTime.now();
+
     dateController.text = DateFormat('dd-MM-yyyy').format(date);
     return TextFormField(
+      decoration: const InputDecoration(prefixIcon: Icon(Icons.date_range)),
       readOnly: true,
       controller: dateController,
       onSaved: (String? newValue) => dateController.text = newValue!,
@@ -346,8 +349,6 @@ class _DetailsPageState extends State<DetailsPage> {
             lastDate: DateTime(distanceYear));
 
         if (pickedDate != null) {
-          //dateController.text = pickedDate.toString();
-          String formattedDate = DateFormat('dd-MM-yyyy').format(pickedDate);
           setState(() {
             transaction.date = pickedDate.toString();
           });

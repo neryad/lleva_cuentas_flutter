@@ -1,3 +1,5 @@
+// ignore_for_file: depend_on_referenced_packages
+
 import 'dart:io';
 
 import 'package:lleva_cuentas/Amount/pages/models/transactions_model.dart';
@@ -7,9 +9,9 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 class DataBaseHelper {
-  static final _dbName = 'llevaCuentas.db';
+  static const _dbName = 'llevaCuentas.db';
 
-  static final _dbVersion = 1;
+  static const _dbVersion = 1;
 
   static final DataBaseHelper instance = DataBaseHelper._();
   DataBaseHelper._();
@@ -57,6 +59,7 @@ class DataBaseHelper {
   newAccount(Account account) async {
     Database db = await instance.database;
     final res = await db.insert('Accounts', account.toJson());
+    return res;
   }
 
   Future<Account?> getAccountById(int id) async {
@@ -99,6 +102,7 @@ class DataBaseHelper {
   addTransaction(Transactions transactions) async {
     Database db = await instance.database;
     final res = await db.insert('Transactions', transactions.toJson());
+    return res;
   }
 
   Future<int> deleteAccount(int id) async {

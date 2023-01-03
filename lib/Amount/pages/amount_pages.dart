@@ -3,7 +3,6 @@ import 'package:intl/intl.dart';
 import 'package:lleva_cuentas/Amount/pages/models/transactions_model.dart';
 import 'package:lleva_cuentas/Database/account_model.dart';
 import 'package:lleva_cuentas/Database/data_base_servie.dart';
-import 'package:lleva_cuentas/Details/pages/details_page.dart';
 // import 'package:intl/intl.dart';
 
 class AmountPage extends StatefulWidget {
@@ -16,19 +15,13 @@ class AmountPage extends StatefulWidget {
 
 class _AmountPageState extends State<AmountPage> {
   String? dropdownValue = 'Ahorro';
+  String? savedDate = '';
   final TextEditingController amountController = TextEditingController();
-  final TextEditingController comentController = TextEditingController();
+  final TextEditingController commentController = TextEditingController();
   final TextEditingController dateController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     Account account = widget.account;
-    // Initial Selected Value
-    // String? dropdownValue = 'Ahorro';
-    // final TextEditingController amountController = TextEditingController();
-    // final TextEditingController comentController = TextEditingController();
-    // final TextEditingController dateController = TextEditingController();
-
-    // List of items in our dropdown menu
     var items = ['Ahorro', 'Gasto'];
     return Scaffold(
       backgroundColor: const Color(0xff1e234b),
@@ -38,16 +31,7 @@ class _AmountPageState extends State<AmountPage> {
         title: const Text('Nueva transacción'),
         leading: BackButton(
           onPressed: () {
-            // await Navigator.push(
-            //   context,
-            //   MaterialPageRoute(
-            //     builder: (BuildContext context) =>
-            //         DetailsPage(account: account),
-            //   ),
-            // );
-            Navigator.of(context).pop();
-
-            setState(() {});
+            Navigator.pop(context);
           },
         ),
       ),
@@ -118,9 +102,6 @@ class _AmountPageState extends State<AmountPage> {
                             controller: amountController,
                             keyboardType: TextInputType.number,
                             style: const TextStyle(fontSize: 25),
-
-                            // decoration: new InputDecoration(
-                            //     labelText: "Enter your number"),
                           )
                         ],
                       ),
@@ -143,51 +124,27 @@ class _AmountPageState extends State<AmountPage> {
                                 icon: Icon(Icons.calendar_today),
                                 labelText: 'Colocar fecha'),
                             onTap: () async {
+                              var currentYear = DateTime.now().year;
+                              var distanceYear = currentYear + 100;
                               DateTime? pickedDate = await showDatePicker(
                                   context: context,
                                   initialDate: DateTime.now(),
-                                  firstDate: DateTime(2000),
-                                  lastDate: DateTime(2101));
+                                  firstDate: DateTime(currentYear),
+                                  lastDate: DateTime(distanceYear));
 
                               if (pickedDate != null) {
                                 dateController.text = pickedDate.toString();
 
-                                // var inputFormat =
-                                //     DateFormat('yyyy-MM-dd HH:mm');
-                                // var inputDate = inputFormat.parse(_date);
-                                // var outputFormat = DateFormat('dd/MM/yyyy');
-                                String formattedDate =
-                                    DateFormat('dd-MM-yyyy').format(pickedDate);
                                 setState(() {
-                                  dateController.text = pickedDate.toString();
+                                  dateController.text = DateFormat('dd-MM-yyyy')
+                                      .format(pickedDate);
+
+                                  savedDate = pickedDate.toString();
                                 });
                               }
                             },
                             readOnly: true,
                           )
-                          // Row(children: [
-                          //   Row(
-                          //     crossAxisAlignment: CrossAxisAlignment.start,
-                          //     children: [
-                          //       Text('04/11/2022',
-                          //           style: TextStyle(
-                          //               fontSize: 20,
-                          //               fontWeight: FontWeight.w500)),
-                          //       Row(
-                          //         children: [
-                          //           // Text('Tap para cambiar la fecha',
-                          //           //     style: TextStyle(
-                          //           //         fontSize: 20,
-                          //           //         fontWeight: FontWeight.w500)),
-                          //           IconButton(
-                          //             onPressed: () {},
-                          //             icon: Icon(Icons.calendar_month),
-                          //           ),
-                          //         ],
-                          //       )
-                          //     ],
-                          //   )
-                          // ])
                         ],
                       ),
                       const SizedBox(
@@ -202,13 +159,9 @@ class _AmountPageState extends State<AmountPage> {
                                 fontSize: 20, fontWeight: FontWeight.w500),
                           ),
                           TextField(
-                            controller: comentController,
-                            //keyboardType: TextInputType.text,
-                            style: TextStyle(fontSize: 15),
-                            onChanged: (v) => comentController.text = v,
-                            // decoration: new InputDecoration(
-                            //     labelText: "Enter your number"),
-                          )
+                            controller: commentController,
+                            style: const TextStyle(fontSize: 15),
+                          ),
                         ],
                       ),
                       const SizedBox(
@@ -221,15 +174,15 @@ class _AmountPageState extends State<AmountPage> {
                             width: MediaQuery.of(context).size.width * 0.7,
                             child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
-                                  primary: Color(0xff1e234b),
+                                  primary: const Color(0xff1e234b),
                                 ),
                                 onPressed: () {
                                   var newTransaction = Transactions(
                                       type: dropdownValue!,
                                       amount:
                                           double.parse(amountController.text),
-                                      date: dateController.text,
-                                      comment: comentController.text,
+                                      date: savedDate.toString(),
+                                      comment: commentController.text,
                                       accountId: account.id!);
                                   saveTransactions(newTransaction);
                                 },
@@ -252,6 +205,7 @@ class _AmountPageState extends State<AmountPage> {
   }
 
   saveTransactions(Transactions transactions) {
+    // ignore: unnecessary_null_comparison
     if (transactions != null) {
       DataBaseHelper.instance.addTransaction(transactions);
       clearController();
@@ -261,7 +215,7 @@ class _AmountPageState extends State<AmountPage> {
 
   clearController() {
     amountController.clear();
-    comentController.clear();
+    commentController.clear();
     dateController.clear();
   }
 }

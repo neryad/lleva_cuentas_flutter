@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lleva_cuentas/Amount/pages/amount_pages.dart';
-import 'package:lleva_cuentas/Details/pages/details_page.dart';
 import 'package:lleva_cuentas/Home/pages/home_page.dart';
 
 void main() {
@@ -15,7 +13,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Llevacuentas',
-      home: HomePage(),
+      home: const HomePage(),
       routes: {
         'home': (BuildContext context) => const HomePage(),
         // 'details': (BuildContext context) => const DetailsPage(),

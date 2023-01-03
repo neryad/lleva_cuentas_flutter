@@ -80,11 +80,13 @@ class ApiPdf {
   }
 
   static buildFooter(List<Transactions> transactions) {
-    final total = getTotal(transactions!).toString();
+    final total = getTotal(transactions).toString();
     return Container(
         decoration: BoxDecoration(border: Border.all()),
         child: Row(children: [
-          Expanded(child: Text('Total: $total', style: TextStyle(fontSize: 16)))
+          Expanded(
+              child:
+                  Text('Total: $total', style: const TextStyle(fontSize: 16)))
         ]));
   }
 }

@@ -1,9 +1,10 @@
+// ignore_for_file: prefer_is_empty
+
 import 'package:flutter/material.dart';
 import 'package:lleva_cuentas/Database/data_base_servie.dart';
 import 'package:lleva_cuentas/Details/pages/details_page.dart';
 import 'package:lleva_cuentas/Home/widgets/alert.dart';
 import 'package:lleva_cuentas/utils/pdf.dart';
-import 'package:share_plus/share_plus.dart';
 import '../../Database/account_model.dart';
 
 class HomePage extends StatefulWidget {
@@ -18,8 +19,6 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final dbHelper = DataBaseHelper.instance;
     final TextEditingController nameAccountController = TextEditingController();
-    // var test = Account(name: 'Charky');
-    // dbHelper.newAccount(test);
     dbHelper.getTest();
 
     saveAccount(String name) {
@@ -34,51 +33,46 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: const Color(0xff1e234b),
         // title: const Text('hola'),
       ),
-      body: Container(
-          child: Column(
+      body: Column(
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Container(
-              // width: MediaQuery.of(context).size.width,
-              // height: 60.0,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  // TextFormField(),
-                  SizedBox(
-                    width: 220.0,
-                    child: TextField(
-                      style: const TextStyle(color: Colors.white),
-                      controller: nameAccountController,
-                      decoration: const InputDecoration(
-                        focusColor: Colors.white,
-                        enabledBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white),
-                        ),
-                        focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white),
-                        ),
-                        // fillColor: Colors.white,
-                        // border: OutlineInputBorder(),
-                        hintText: 'Nombre de la cuenta',
-                        hintStyle: TextStyle(color: Colors.white),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // TextFormField(),
+                SizedBox(
+                  width: 220.0,
+                  child: TextField(
+                    style: const TextStyle(color: Colors.white),
+                    controller: nameAccountController,
+                    decoration: const InputDecoration(
+                      focusColor: Colors.white,
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white),
                       ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white),
+                      ),
+                      // fillColor: Colors.white,
+                      // border: OutlineInputBorder(),
+                      hintText: 'Nombre de la cuenta',
+                      hintStyle: TextStyle(color: Colors.white),
                     ),
                   ),
-                  IconButton(
-                      onPressed: () {
-                        setState(() {
-                          saveAccount(nameAccountController.text);
-                        });
-                      },
-                      icon: const Icon(
-                        Icons.add,
-                        color: Colors.white,
-                      ))
-                ],
-              ),
+                ),
+                IconButton(
+                    onPressed: () {
+                      setState(() {
+                        saveAccount(nameAccountController.text);
+                      });
+                    },
+                    icon: const Icon(
+                      Icons.add,
+                      color: Colors.white,
+                    ))
+              ],
             ),
           ),
           const SizedBox(
@@ -113,7 +107,7 @@ class _HomePageState extends State<HomePage> {
                       height: 15.0,
                     ),
                     Padding(
-                      padding: EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.all(8.0),
                       child: accountsCardList(),
                     )
                   ],
@@ -122,7 +116,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
         ],
-      )),
+      ),
     );
   }
 
@@ -148,7 +142,7 @@ class _HomePageState extends State<HomePage> {
           itemCount: account.length,
           shrinkWrap: true,
           itemBuilder: (context, index) {
-            return cardAccount(account![index], context);
+            return cardAccount(account[index], context);
           },
         );
       },
@@ -173,11 +167,11 @@ class _HomePageState extends State<HomePage> {
               // ignore: prefer_const_literals_to_create_immutables
               children: [
                 CircleAvatar(
-                  backgroundColor: Color(0xffecedf6),
+                  backgroundColor: const Color(0xffecedf6),
                   // ignore: unnecessary_const
                   child: Text(
-                    account!.name[0].toUpperCase(),
-                    style: TextStyle(
+                    account.name[0].toUpperCase(),
+                    style: const TextStyle(
                         color: Color(0xff1e234b), fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -185,8 +179,8 @@ class _HomePageState extends State<HomePage> {
                   width: 60.0,
                 ),
                 Text(
-                  account!.name,
-                  style: TextStyle(
+                  account.name,
+                  style: const TextStyle(
                       color: Color(0xff1e234b), fontWeight: FontWeight.bold),
                 ),
               ],
