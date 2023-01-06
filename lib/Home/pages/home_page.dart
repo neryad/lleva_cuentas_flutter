@@ -22,6 +22,10 @@ class _HomePageState extends State<HomePage> {
     dbHelper.getTest();
 
     saveAccount(String name) {
+      if (name.trim().isEmpty) {
+        alert();
+        return;
+      }
       var account = Account(name: name);
       dbHelper.newAccount(account);
     }
@@ -117,6 +121,26 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
+    );
+  }
+
+  alert() {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: new Text("Aviso"),
+          content: new Text("Deve colocar el nombre de la cuenta!"),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text("OK"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
