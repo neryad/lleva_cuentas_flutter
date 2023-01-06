@@ -129,11 +129,11 @@ class _HomePageState extends State<HomePage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: new Text("Aviso"),
-          content: new Text("Deve colocar el nombre de la cuenta!"),
+          title: const Text("Aviso"),
+          content: const Text("Debe colocar el nombre de la cuenta!"),
           actions: <Widget>[
-            new FlatButton(
-              child: new Text("OK"),
+            TextButton(
+              child: const Text("OK"),
               onPressed: () {
                 Navigator.of(context).pop();
               },

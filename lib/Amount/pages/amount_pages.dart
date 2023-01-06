@@ -177,6 +177,13 @@ class _AmountPageState extends State<AmountPage> {
                                   primary: const Color(0xff1e234b),
                                 ),
                                 onPressed: () {
+                                  if (amountController.text.isEmpty ||
+                                      commentController.text.isEmpty ||
+                                      savedDate.toString().isEmpty ||
+                                      dropdownValue!.isEmpty) {
+                                    alert();
+                                    return;
+                                  }
                                   var newTransaction = Transactions(
                                       type: dropdownValue!,
                                       amount:
@@ -211,6 +218,26 @@ class _AmountPageState extends State<AmountPage> {
       clearController();
       return;
     }
+  }
+
+  alert() {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Aviso"),
+          content: const Text("No se permiten campos vacíos!"),
+          actions: <Widget>[
+            TextButton(
+              child: const Text("OK"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   clearController() {

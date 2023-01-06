@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:lleva_cuentas/Amount/pages/models/transactions_model.dart';
 import 'package:lleva_cuentas/Database/account_model.dart';
 import 'package:lleva_cuentas/Database/data_base_servie.dart';
-import 'package:open_file/open_file.dart';
+import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart';
@@ -76,7 +76,7 @@ class ApiPdf {
               0;
   static Future openFile(File file) async {
     final url = file.path;
-    await OpenFile.open(url);
+    await OpenFilex.open(url);
   }
 
   static buildFooter(List<Transactions> transactions) {
