@@ -17,7 +17,8 @@ class DetailsPage extends StatefulWidget {
 @override
 class _DetailsPageState extends State<DetailsPage> {
   String dropDownValue = 'Ahorro';
-  final items = ['Ahorro', 'Gasto'];
+  NumberFormat myFormat = NumberFormat.decimalPattern('en_us');
+  final items = ['Ahorro', 'Gasto', 'Ingreso'];
   final TextEditingController dateController = TextEditingController();
   final editFormKey = GlobalKey<FormState>();
   @override
@@ -70,8 +71,11 @@ class _DetailsPageState extends State<DetailsPage> {
             if (!snapshot.hasData) {
               return const Center(child: CircularProgressIndicator());
             }
+
             final transactions = snapshot.data;
             transactions!.sort(((a, b) => b.date.compareTo(a.date)));
+            var total = getTotal(transactions).toInt();
+            var total2 = myFormat.format(total);
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -93,10 +97,10 @@ class _DetailsPageState extends State<DetailsPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(getTotal(transactions).toString(),
+                    Text('\u0024 $total2 ',
                         style: const TextStyle(
                             color: Colors.white,
-                            fontSize: 50,
+                            fontSize: 45,
                             fontWeight: FontWeight.w800))
                   ],
                 ),
@@ -173,100 +177,107 @@ class _DetailsPageState extends State<DetailsPage> {
 
   card(Transactions transactions, BuildContext context) {
     return Card(
-      elevation: 0,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Row(
-            // ignore: prefer_const_literals_to_create_immutables
-            children: [
-              const CircleAvatar(
-                  backgroundColor: Color(0xffecedf6),
-                  // ignore: unnecessary_const
-                  child: Icon(
-                    Icons.monetization_on_outlined,
-                    color: Color(0xff1e234b),
-                  )),
-              const SizedBox(
-                width: 10.0,
-              ),
-              Column(
-                children: [
-                  Text(
-                    transactions.comment,
-                    style: const TextStyle(
-                        color: Color(0xff1e234b), fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(
-                    height: 5.0,
-                  ),
-                  Text(
-                    DateFormat('MMM d, yyyy')
-                        .format(DateTime.parse(transactions.date))
-                        .toString(),
-                    style: const TextStyle(
-                        color: Color(0xff1e234b), fontWeight: FontWeight.bold),
-                  ),
-                ],
-              )
-            ],
-          ),
-          Row(
-            children: [
-              Column(
-                children: [
-                  transactions.type == 'Gasto'
-                      ? Text(
-                          '-${transactions.amount}',
-                          style: const TextStyle(
-                              color: Colors.red,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600),
-                        )
-                      : Text(
-                          transactions.amount.toString(),
-                          style: const TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.w600),
+        elevation: 0,
+        child: Column(
+          children: [
+            Text(
+              DateFormat('MMM d, yyyy')
+                  .format(DateTime.parse(transactions.date))
+                  .toString(),
+              style: const TextStyle(
+                  color: Color(0xff1e234b), fontWeight: FontWeight.bold),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  // ignore: prefer_const_literals_to_create_immutables
+                  children: [
+                    const CircleAvatar(
+                        backgroundColor: Color(0xffecedf6),
+                        // ignore: unnecessary_const
+                        child: Icon(
+                          Icons.monetization_on_outlined,
+                          color: Color(0xff1e234b),
+                        )),
+                    const SizedBox(
+                      width: 10.0,
+                    ),
+                    Column(
+                      children: [
+                        const SizedBox(
+                          height: 8.0,
                         ),
-                  Row(
-                    children: [
-                      InkWell(
-                          child: const Icon(
-                            Icons.edit,
-                            size: 18,
-                          ),
-                          onTap: () {
-                            editAlert(context, transactions);
+                        Text(
+                          transactions.comment,
+                          style: const TextStyle(
+                              color: Color(0xff1e234b),
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+                Row(
+                  children: [
+                    Column(
+                      children: [
+                        transactions.type == 'Gasto'
+                            ? Text(
+                                '-${transactions.amount.toStringAsFixed(2)}',
+                                style: const TextStyle(
+                                    color: Colors.red,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w600),
+                              )
+                            : Text(
+                                myFormat.format(transactions.amount),
+                                style: const TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.w600),
+                              ),
+                        Row(
+                          children: [
+                            InkWell(
+                                child: const Icon(
+                                  Icons.edit,
+                                  size: 18,
+                                ),
+                                onTap: () {
+                                  editAlert(context, transactions);
 
-                            setState(() {});
-                          }),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      InkWell(
-                          child: const Icon(
-                            Icons.delete,
-                            size: 18,
-                            color: Colors.red,
-                          ),
-                          onTap: () async {
-                            await deleteAlert(
-                                context,
-                                "Seguro de borrar la Transacción",
-                                transactions.id,
-                                'Transactions');
-                            setState(() {});
-                          }),
-                    ],
-                  )
-                ],
-              )
-            ],
-          ),
-        ],
-      ),
-    );
+                                  setState(() {});
+                                }),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            InkWell(
+                                child: const Icon(
+                                  Icons.delete,
+                                  size: 18,
+                                  color: Colors.red,
+                                ),
+                                onTap: () async {
+                                  await deleteAlert(
+                                      context,
+                                      "Seguro de borrar la Transacción",
+                                      transactions.id,
+                                      'Transactions');
+                                  setState(() {});
+                                }),
+                          ],
+                        ),
+                        const Divider()
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ));
   }
 
   Future editAlert(BuildContext context, Transactions transaction) async {

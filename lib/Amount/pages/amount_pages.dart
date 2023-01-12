@@ -22,7 +22,7 @@ class _AmountPageState extends State<AmountPage> {
   @override
   Widget build(BuildContext context) {
     Account account = widget.account;
-    var items = ['Ahorro', 'Gasto'];
+    var items = ['Ahorro', 'Gasto', 'Ingreso'];
     return Scaffold(
       backgroundColor: const Color(0xff1e234b),
       appBar: AppBar(

@@ -153,7 +153,10 @@ class _HomePageState extends State<HomePage> {
         }
 
         final account = snapshot.data;
-        if (account!.length == 0) {
+        account!.sort(
+            ((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase())));
+
+        if (account.isEmpty) {
           return const Padding(
             padding: EdgeInsets.all(8),
             child: Center(
