@@ -13,6 +13,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Llevacuentas',
+      //theme: ThemeData(colorSchemeSeed: const Color(0xff1e234b)),
       home: const HomePage(),
       routes: {
         'home': (BuildContext context) => const HomePage(),
