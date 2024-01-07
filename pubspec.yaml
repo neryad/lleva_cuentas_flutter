@@ -37,7 +37,7 @@ dependencies:
   sqflite: ^2.0.3+1
   pdf: ^3.8.3
   path_provider: ^2.0.11
-  intl: ^0.17.0
+  intl: ^0.19.0
   open_filex: ^4.3.2
   share_plus:
 
@@ -51,7 +51,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^2.0.0
+  flutter_lints: ^3.0.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
