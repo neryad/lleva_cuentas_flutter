@@ -174,7 +174,7 @@ class _AmountPageState extends State<AmountPage> {
                             width: MediaQuery.of(context).size.width * 0.7,
                             child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
-                                  primary: const Color(0xff1e234b),
+                                  backgroundColor: const Color(0xff1e234b),
                                 ),
                                 onPressed: () {
                                   if (amountController.text.isEmpty ||
