@@ -18,6 +18,7 @@ Future deleteAlert(BuildContext context, String tittle, int? id, String type) {
                 child: const Text('Cancelar')),
             TextButton(
                 onPressed: () async {
+                  print(type);
                   if (type == 'Transactions') {
                     await DataBaseHelper.instance.deleteTransaction(
                       id!,

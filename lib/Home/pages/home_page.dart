@@ -223,11 +223,13 @@ class _HomePageState extends State<HomePage> {
                     },
                     icon: const Icon(Icons.document_scanner)),
                 IconButton(
-                    onPressed: () {
-                      setState(() {
-                        deleteAlert(context, 'Seguro de eliminar la cuenta?',
-                            account.id!, 'Accounts');
-                      });
+                    onPressed: () async {
+                      await deleteAlert(
+                          context,
+                          'Seguro de eliminar la cuenta?',
+                          account.id!,
+                          'Accounts');
+                      setState(() {});
 
                       // _deleteAlert();
                     },
