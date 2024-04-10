@@ -28,8 +28,12 @@ class _AmountPageState extends State<AmountPage> {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: const Color(0xff1e234b),
-        title: const Text('Nueva transacción'),
+        title: const Text(
+          'Nueva transacción',
+          style: TextStyle(color: Colors.white),
+        ),
         leading: BackButton(
+          color: Colors.white,
           onPressed: () {
             Navigator.pop(context);
           },
@@ -173,9 +177,7 @@ class _AmountPageState extends State<AmountPage> {
                           SizedBox(
                             width: MediaQuery.of(context).size.width * 0.7,
                             child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xff1e234b),
-                                ),
+                                style: ElevatedButton.styleFrom(),
                                 onPressed: () {
                                   if (amountController.text.isEmpty ||
                                       commentController.text.isEmpty ||
