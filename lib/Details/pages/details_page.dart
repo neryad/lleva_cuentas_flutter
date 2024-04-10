@@ -58,6 +58,7 @@ class _DetailsPageState extends State<DetailsPage> {
           )
         ],
         leading: BackButton(
+          color: Colors.white,
           onPressed: () {
             // Navigator.push(context,
             //     MaterialPageRoute(builder: (context) => const HomePage()));
@@ -177,6 +178,7 @@ class _DetailsPageState extends State<DetailsPage> {
 
   card(Transactions transactions, BuildContext context) {
     return Card(
+        //color: Theme.of(context).colorScheme.background,
         elevation: 0,
         child: Column(
           children: [
