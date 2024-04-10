@@ -112,12 +112,21 @@ class DataBaseHelper {
     await deleteTransaction(id);
     return res;
   }
+// ```
+//   Future<int> deleteTransaction(int id) async {
+//     final db = await instance.database;
+
+//     final res =
+//         await db.delete('Transactions', where: 'accountId=?', whereArgs: [id]);
+
+//     return res;
+//   }
+// ```
 
   Future<int> deleteTransaction(int id) async {
     final db = await instance.database;
 
-    final res =
-        await db.delete('Transactions', where: 'accountId=?', whereArgs: [id]);
+    final res = await db.delete('Transactions', where: 'id=?', whereArgs: [id]);
 
     return res;
   }

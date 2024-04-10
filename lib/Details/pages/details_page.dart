@@ -390,3 +390,342 @@ class _DetailsPageState extends State<DetailsPage> {
     setState(() {});
   }
 }
+
+
+
+
+
+////////
+// class DetailsPage extends StatefulWidget {
+//   const DetailsPage({Key? key, required this.account}) : super(key: key);
+//   final Account account;
+
+//   @override
+//   _DetailsPageState createState() => _DetailsPageState();
+// }
+
+// class _DetailsPageState extends State<DetailsPage> {
+//   String dropDownValue = 'Ahorro';
+//   final NumberFormat myFormat = NumberFormat.decimalPattern('en_us');
+//   final List<String> items = ['Ahorro', 'Gasto', 'Ingreso'];
+//   final TextEditingController dateController = TextEditingController();
+//   final GlobalKey<FormState> editFormKey = GlobalKey<FormState>();
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       backgroundColor: const Color(0xff1e234b),
+//       appBar: AppBar(
+//         elevation: 0,
+//         backgroundColor: const Color(0xff1e234b),
+//         actions: [
+//           CircleAvatar(
+//             backgroundColor: Colors.white,
+//             child: IconButton(
+//               color: const Color(0xff1e234b),
+//               onPressed: () {
+//                 Navigator.push(
+//                   context,
+//                   MaterialPageRoute(
+//                     builder: (context) => AmountPage(account: widget.account),
+//                   ),
+//                 ).then((value) {
+//                   setState(() {});
+//                 });
+//               },
+//               icon: const Icon(Icons.add),
+//             ),
+//           )
+//         ],
+//         leading: BackButton(
+//           onPressed: () {
+//             Navigator.of(context).pop();
+//           },
+//         ),
+//       ),
+//       body: FutureBuilder<List<Transactions>>(
+//         future: DataBaseHelper.instance.getTransactionsById(widget.account.id!),
+//         builder: (context, AsyncSnapshot<List<Transactions>> snapshot) {
+//           if (!snapshot.hasData) {
+//             return const Center(child: CircularProgressIndicator());
+//           }
+
+//           final transactions = snapshot.data!;
+//           transactions.sort((a, b) => b.date.compareTo(a.date));
+//           final total = getTotal(transactions).toInt();
+//           final totalFormatted = myFormat.format(total);
+
+//           return Column(
+//             mainAxisAlignment: MainAxisAlignment.center,
+//             children: [
+//               Text(
+//                 'Total ${widget.account.name}',
+//                 style: const TextStyle(
+//                   color: Colors.white,
+//                   fontSize: 24,
+//                   fontWeight: FontWeight.w500,
+//                 ),
+//               ),
+//               const SizedBox(height: 15),
+//               Text(
+//                 '\$ $totalFormatted',
+//                 style: const TextStyle(
+//                   color: Colors.white,
+//                   fontSize: 45,
+//                   fontWeight: FontWeight.w800,
+//                 ),
+//               ),
+//               const SizedBox(height: 20),
+//               Expanded(
+//                 child: Container(
+//                   decoration: const BoxDecoration(
+//                     color: Colors.white,
+//                     borderRadius: BorderRadius.only(
+//                       topLeft: Radius.circular(20),
+//                       topRight: Radius.circular(20),
+//                     ),
+//                   ),
+//                   width: MediaQuery.of(context).size.width,
+//                   height: MediaQuery.of(context).size.height,
+//                   child: Column(
+//                     mainAxisAlignment: MainAxisAlignment.start,
+//                     crossAxisAlignment: CrossAxisAlignment.start,
+//                     children: [
+//                       const Padding(
+//                         padding: EdgeInsets.all(15.0),
+//                         child: Text(
+//                           'Listado de transacciones',
+//                           style: TextStyle(
+//                             color: Color(0xff1e234b),
+//                             fontWeight: FontWeight.bold,
+//                             fontSize: 20.0,
+//                           ),
+//                         ),
+//                       ),
+//                       const SizedBox(height: 15.0),
+//                       Expanded(
+//                         child: Padding(
+//                           padding: const EdgeInsets.all(8.0),
+//                           child: listCards(transactions),
+//                         ),
+//                       ),
+//                     ],
+//                   ),
+//                 ),
+//               ),
+//             ],
+//           );
+//         },
+//       ),
+//     );
+//   }
+
+//   double getTotal(List<Transactions> transactions) => transactions.isEmpty
+//       ? 0
+//       : transactions
+//           .map((e) => e.amount * (e.isSaving() ? 1 : -1))
+//           .reduce((value, element) => value + element);
+
+//   Widget listCards(List<Transactions> transactions) {
+//     if (transactions.isEmpty) {
+//       return const Padding(
+//         padding: EdgeInsets.all(8),
+//         child: Center(
+//           child: Text('No tienes transacciones registradas'),
+//         ),
+//       );
+//     }
+
+//     return ListView.builder(
+//       itemCount: transactions.length,
+//       itemBuilder: (context, index) => card(transactions[index]),
+//     );
+//   }
+
+//   Widget card(Transactions transactions) {
+//     return Card(
+//       elevation: 0,
+//       child: Column(
+//         children: [
+//           Text(
+//             DateFormat('MMM d, yyyy').format(DateTime.parse(transactions.date)),
+//             style: const TextStyle(
+//               color: Color(0xff1e234b),
+//               fontWeight: FontWeight.bold,
+//             ),
+//           ),
+//           Row(
+//             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//             children: [
+//               Row(
+//                 children: [
+//                   const CircleAvatar(
+//                     backgroundColor: Color(0xffecedf6),
+//                     child: Icon(
+//                       Icons.monetization_on_outlined,
+//                       color: Color(0xff1e234b),
+//                     ),
+//                   ),
+//                   const SizedBox(width: 10.0),
+//                   Column(
+//                     children: [
+//                       const SizedBox(height: 8.0),
+//                       Text(
+//                         transactions.comment,
+//                         style: const TextStyle(
+//                           color: Color(0xff1e234b),
+//                           fontWeight: FontWeight.bold,
+//                         ),
+//                       ),
+//                     ],
+//                   ),
+//                 ],
+//               ),
+//               Column(
+//                 children: [
+//                   Text(
+//                     transactions.type == 'Gasto'
+//                         ? '-${transactions.amount.toStringAsFixed(2)}'
+//                         : myFormat.format(transactions.amount),
+//                     style: TextStyle(
+//                       color: transactions.type == 'Gasto'
+//                           ? Colors.red
+//                           : Colors.black,
+//                       fontSize: 18,
+//                       fontWeight: FontWeight.w600,
+//                     ),
+//                   ),
+//                   Row(
+//                     children: [
+//                       InkWell(
+//                         onTap: () => editAlert(context, transactions),
+//                         child: const Icon(Icons.edit, size: 18),
+//                       ),
+//                       const SizedBox(width: 10),
+//                       InkWell(
+//                         onTap: () async {
+//                           await deleteAlert(
+//                             context,
+//                             "Seguro de borrar la Transacción",
+//                             transactions.id,
+//                             'Transactions',
+//                           );
+//                           setState(() {});
+//                         },
+//                         child: const Icon(Icons.delete,
+//                             size: 18, color: Colors.red),
+//                       ),
+//                     ],
+//                   ),
+//                   const Divider(),
+//                 ],
+//               ),
+//             ],
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+
+//   Future<void> editAlert(BuildContext context, Transactions transaction) async {
+//     showDialog(
+//       context: context,
+//       builder: (context) => AlertDialog(
+//         title: const Text('Editar transacción'),
+//         content: StatefulBuilder(
+//           builder: (context, setState) => Form(
+//             key: editFormKey,
+//             child: SingleChildScrollView(
+//               child: Column(
+//                 mainAxisSize: MainAxisSize.min,
+//                 children: [
+//                   editDescription(transaction),
+//                   editAmount(transaction),
+//                   editType(transaction, setState),
+//                   editDate(transaction),
+//                 ],
+//               ),
+//             ),
+//           ),
+//         ),
+//         actions: [
+//           TextButton(
+//             onPressed: () {
+//               setState(() {
+//                 editSubmit(transaction);
+//               });
+//               Navigator.of(context).pop();
+//             },
+//             child: const Text('Guardar'),
+//           ),
+//           TextButton(
+//             onPressed: () => Navigator.of(context).pop(),
+//             child: const Text('Cancelar'),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+
+//   Widget editDescription(Transactions transaction) {
+//     return TextFormField(
+//       initialValue: transaction.comment,
+//       textCapitalization: TextCapitalization.sentences,
+//       onSaved: (newValue) => transaction.comment = newValue!,
+//     );
+//   }
+
+//   Widget editAmount(Transactions transaction) {
+//     return TextFormField(
+//       initialValue: transaction.amount.toString(),
+//       keyboardType: TextInputType.number,
+//       onSaved: (newValue) => transaction.amount = double.parse(newValue!),
+//     );
+//   }
+
+//   Widget editDate(Transactions transaction) {
+//     final currentYear = DateTime.now().year;
+//     final distanceYear = currentYear + 100;
+//     final date = DateTime.parse(transaction.date);
+
+//     dateController.text = DateFormat('dd-MM-yyyy').format(date);
+//     return TextFormField(
+//       decoration: const InputDecoration(prefixIcon: Icon(Icons.date_range)),
+//       readOnly: true,
+//       controller: dateController,
+//       onTap: () async {
+//         final pickedDate = await showDatePicker(
+//           context: context,
+//           initialDate: DateTime.now(),
+//           firstDate: DateTime(currentYear),
+//           lastDate: DateTime(distanceYear),
+//         );
+
+//         if (pickedDate != null) {
+//           setState(() {
+//             transaction.date = pickedDate.toString();
+//           });
+//         }
+//       },
+//     );
+//   }
+
+//   Widget editType(Transactions transaction, StateSetter setState) {
+//     return SizedBox(
+//       width: MediaQuery.of(context).size.width,
+//       child: DropdownButton<String>(
+//         value: transaction.type,
+//         onChanged: (value) => setState(() => transaction.type = value!),
+//         items: items
+//             .map((item) => DropdownMenuItem(value: item, child: Text(item)))
+//             .toList(),
+//       ),
+//     );
+//   }
+
+//   void editSubmit(Transactions transaction) async {
+//     editFormKey.currentState!.save();
+//     await DataBaseHelper.instance.updateTransaction(transaction);
+//     setState(() {});
+//   }
+// }
