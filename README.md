@@ -3,7 +3,7 @@
 </div>
 
 
-# Lleva Cuentas
+# Lleva Cuentas [![Codemagic build status](https://api.codemagic.io/apps/660ef805c47054341ffb6c68/660ef805c47054341ffb6c67/status_badge.svg)](https://codemagic.io/apps/660ef805c47054341ffb6c68/660ef805c47054341ffb6c67/latest_build)
 
 [![Built with Flutter](https://img.shields.io/badge/Built_with-Flutter-blue.svg)](https://flutter.dev/)
 ![Version](https://img.shields.io/badge/Version-1.0.4-blue)
