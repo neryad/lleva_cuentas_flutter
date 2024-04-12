@@ -109,19 +109,18 @@ class DataBaseHelper {
     final db = await instance.database;
 
     final res = await db.delete('Accounts', where: 'id = ?', whereArgs: [id]);
-    await deleteTransaction(id);
+    await deleteTransactionByAccountId(id);
     return res;
   }
-// ```
-//   Future<int> deleteTransaction(int id) async {
-//     final db = await instance.database;
 
-//     final res =
-//         await db.delete('Transactions', where: 'accountId=?', whereArgs: [id]);
+  Future<int> deleteTransactionByAccountId(int id) async {
+    final db = await instance.database;
 
-//     return res;
-//   }
-// ```
+    final res =
+        await db.delete('Transactions', where: 'accountId=?', whereArgs: [id]);
+
+    return res;
+  }
 
   Future<int> deleteTransaction(int id) async {
     final db = await instance.database;
@@ -131,14 +130,14 @@ class DataBaseHelper {
     return res;
   }
 
-  Future<int> deleteTransactionByAccountId(int id) async {
-    final db = await instance.database;
+  // Future<int> deleteTransactionByAccountId(int id) async {
+  //   final db = await instance.database;
 
-    final res =
-        await db.delete('Transactions', where: 'id = ?', whereArgs: [id]);
+  //   final res =
+  //       await db.delete('Transactions', where: 'id = ?', whereArgs: [id]);
 
-    return res;
-  }
+  //   return res;
+  // }
 
   updateTransaction(Transactions transaction) async {
     final db = await instance.database;
