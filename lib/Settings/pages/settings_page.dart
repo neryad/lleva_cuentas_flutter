@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lleva_cuentas/about/pages/about.dart';
 import 'package:lleva_cuentas/theme_manager.dart';
 import 'package:provider/provider.dart';
 
@@ -242,6 +243,54 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
 
                 const SizedBox(height: 20),
+
+                // --- Sección Acerca de ---
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'App',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: Theme.of(context).colorScheme.outline,
+                            width: 1,
+                          ),
+                        ),
+                        child: ListTile(
+                          leading: Icon(
+                            Icons.info_outline,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                          title: const Text('Acerca de'),
+                          subtitle: const Text('Versión, redes y contacto'),
+                          trailing:
+                              const Icon(Icons.arrow_forward_ios, size: 18),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const AboutPage(),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 20),
               ],
             ),
           );
@@ -313,13 +362,15 @@ class _SettingsPageState extends State<SettingsPage> {
 
   void _showColorPicker(BuildContext context, ThemeManager themeManager) {
     Color selectedColor = themeManager.seedColor;
-    final hexController = TextEditingController(
-      text: selectedColor.value.toRadixString(16).substring(2).toUpperCase(),
-    );
 
     showDialog(
       context: context,
       builder: (context) {
+        final hexController = TextEditingController(
+          text:
+              selectedColor.value.toRadixString(16).substring(2).toUpperCase(),
+        );
+
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
