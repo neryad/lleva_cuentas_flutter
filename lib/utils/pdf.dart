@@ -1,17 +1,15 @@
-import 'dart:io';
 import 'dart:math';
 
 import 'package:intl/intl.dart';
 import 'package:lleva_cuentas/Amount/pages/models/transactions_model.dart';
 import 'package:lleva_cuentas/Database/account_model.dart';
 import 'package:lleva_cuentas/Database/data_base_servie.dart';
-import 'package:open_filex/open_filex.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:lleva_cuentas/utils/file_handle_api.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart';
 
 class ApiPdf {
-  static Future<File> generaPdf(int id) async {
+  static Future<void> generaPdf(int id) async {
     final pdf = Document();
 
     final account = await DataBaseHelper.instance.getAccountById(id);
@@ -30,8 +28,16 @@ class ApiPdf {
             ],
         footer: (context) => buildFooter()));
 
-    return savePdf('${account?.name}Resumen', pdf);
+    await savePdf('${account?.name}Resumen', pdf);
   }
+
+  static Widget buildAccountName(Account account) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(account.name, style: TextStyle(fontWeight: FontWeight.bold)),
+          Text('ID: ${account.id}'),
+        ],
+      );
 
   static documentTitle(Account account) {
     return Column(
@@ -156,15 +162,9 @@ class ApiPdf {
     );
   }
 
-  static Future<File> savePdf(String name, Document pdf) async {
+  static Future<void> savePdf(String name, Document pdf) async {
     final bytes = await pdf.save();
-
-    final dir = await getApplicationDocumentsDirectory();
-
-    final file = File('${dir.path}/$name.pdf');
-    await file.writeAsBytes(bytes);
-
-    return file;
+    await FileHandleApi.saveDocument(name: name, bytes: bytes);
   }
 
   static double getTotal(Iterable<Transactions>? transactions) =>
@@ -174,19 +174,6 @@ class ApiPdf {
                   ?.map((e) => e.amount * (e.isSaving() ? 1 : -1))
                   .reduce((value, element) => value + element) ??
               0;
-
-  static Widget buildAccountName(Account account) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(account.name, style: TextStyle(fontWeight: FontWeight.bold)),
-          Text('ID: ${account.id}'),
-        ],
-      );
-
-  static Future openFile(File file) async {
-    final url = file.path;
-    await OpenFilex.open(url);
-  }
 
   static buildTotal(List<Transactions> transactions) {
     NumberFormat myFormat = NumberFormat.decimalPattern('en_us');
