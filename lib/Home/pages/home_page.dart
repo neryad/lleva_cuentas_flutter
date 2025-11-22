@@ -225,18 +225,6 @@
 // //                 ],
 // //               ),
 
-// //               // 🔹 Acciones mejor alineadas
-// //               Row(
-// //                 children: [
-// //                   IconButton(
-// //                     onPressed: () async {
-// //                       final pdf = await ApiPdf.generaPdf(account.id!);
-// //                       ApiPdf.openFile(pdf);
-// //                     },
-// //                     icon: const Icon(Icons.picture_as_pdf_outlined,
-// //                         color: Color(0xff1e234b)),
-// //                   ),
-// //                   IconButton(
 // //                     onPressed: () async {
 // //                       await deleteAlert(
 // //                         context,
@@ -1178,8 +1166,7 @@ class _HomePageState extends State<HomePage> {
                         child: InkWell(
                           borderRadius: BorderRadius.circular(10),
                           onTap: () async {
-                            final pdf = await ApiPdf.generaPdf(account.id!);
-                            ApiPdf.openFile(pdf);
+                            await ApiPdf.generaPdf(account.id!);
                           },
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),

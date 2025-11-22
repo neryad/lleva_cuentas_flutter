@@ -7,6 +7,8 @@ import 'package:lleva_cuentas/Database/account_model.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 
 class DataBaseHelper {
   static const _dbName = 'llevaCuentas.db';
@@ -31,6 +33,11 @@ class DataBaseHelper {
   }
 
   _initDataBase() async {
+    if (kIsWeb) {
+      return await databaseFactoryFfiWeb.openDatabase(_dbName,
+          options: OpenDatabaseOptions(
+              version: _dbVersion, onOpen: (instance) {}, onCreate: _createDb));
+    }
     Directory documentDir = await getApplicationDocumentsDirectory();
 
     String path = join(documentDir.path, _dbName);
