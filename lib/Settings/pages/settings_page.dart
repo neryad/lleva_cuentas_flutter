@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lleva_cuentas/about/pages/about.dart';
+import 'package:lleva_cuentas/Settings/pages/legal_page.dart';
 import 'package:lleva_cuentas/theme_manager.dart';
 import 'package:provider/provider.dart';
 
@@ -281,6 +282,34 @@ class _SettingsPageState extends State<SettingsPage> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => const AboutPage(),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: Theme.of(context).colorScheme.outline,
+                            width: 1,
+                          ),
+                        ),
+                        child: ListTile(
+                          leading: Icon(
+                            Icons.description_outlined,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                          title: const Text('Políticas y Términos'),
+                          subtitle: const Text('Privacidad y uso legal'),
+                          trailing:
+                              const Icon(Icons.arrow_forward_ios, size: 18),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const LegalPage(),
                               ),
                             );
                           },
