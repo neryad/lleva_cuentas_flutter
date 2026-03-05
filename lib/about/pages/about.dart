@@ -179,7 +179,7 @@ class AboutPage extends StatelessWidget {
                         context,
                         icon: Icons.share_outlined,
                         label: 'Compartir App',
-                        subtitle: 'En Play Store',
+                        subtitle: 'Enviar enlace',
                         onTap: () => _shareApp(context),
                         colorScheme: colorScheme,
                       ),
@@ -406,7 +406,7 @@ class AboutPage extends StatelessWidget {
 
   void _shareApp(BuildContext context) {
     Share.share(
-      'Descarga Lleva Cuentas - La mejor app para gestionar tus finanzas 💰\n\nhttps://play.google.com/store/apps/details?id=com.neryad.lleva_cuentas',
+      'Descarga Lleva Cuentas - La mejor app para gestionar tus finanzas 💰\n\nhttps://llevacuentas.-web.neryad.dev/',
       subject: 'Descarga Lleva Cuentas',
     );
   }
