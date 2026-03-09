@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lleva_cuentas/about/pages/about.dart';
-import 'package:lleva_cuentas/Settings/pages/legal_page.dart';
 import 'package:lleva_cuentas/theme_manager.dart';
 import 'package:provider/provider.dart';
 
@@ -278,12 +276,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           trailing:
                               const Icon(Icons.arrow_forward_ios, size: 18),
                           onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const AboutPage(),
-                              ),
-                            );
+                            Navigator.pushNamed(context, '/about');
                           },
                         ),
                       ),
@@ -306,12 +299,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           trailing:
                               const Icon(Icons.arrow_forward_ios, size: 18),
                           onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const LegalPage(),
-                              ),
-                            );
+                            Navigator.pushNamed(context, '/legal');
                           },
                         ),
                       ),

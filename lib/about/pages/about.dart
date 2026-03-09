@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -166,14 +168,25 @@ class AboutPage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      _actionButton(
-                        context,
-                        icon: Icons.favorite_outline,
-                        label: 'Apoya el proyecto',
-                        subtitle: 'En Ko-fi',
-                        onTap: () => _launchUrl('https://ko-fi.com/neryad'),
-                        colorScheme: colorScheme,
-                      ),
+                      // _actionButton(
+                      //   context,
+                      //   icon: Icons.favorite_outline,
+                      //   label: 'Apoya el proyecto',
+                      //   subtitle: 'En Ko-fi',
+                      //   onTap: () => _launchUrl('https://ko-fi.com/neryad'),
+                      //   colorScheme: colorScheme,
+                      // ),
+                      if (!Platform.isIOS) ...[
+                        _actionButton(
+                          context,
+                          icon: Icons.favorite_outline,
+                          label: 'Apoya el proyecto',
+                          subtitle: 'En Ko-fi',
+                          onTap: () => _launchUrl('https://ko-fi.com/neryad'),
+                          colorScheme: colorScheme,
+                        ),
+                        const SizedBox(height: 12),
+                      ],
                       const SizedBox(height: 12),
                       _actionButton(
                         context,
