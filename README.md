@@ -5,7 +5,7 @@
 # Lleva Cuentas [![Codemagic build status](https://api.codemagic.io/apps/660ef805c47054341ffb6c68/660ef805c47054341ffb6c67/status_badge.svg)](https://codemagic.io/apps/660ef805c47054341ffb6c68/660ef805c47054341ffb6c67/latest_build)
 
 [![Built with Flutter](https://img.shields.io/badge/Built_with-Flutter-blue.svg)](https://flutter.dev/)
-![Version](https://img.shields.io/badge/Version-1.2.0-blue)
+![Version](https://img.shields.io/badge/Version-1.3.0-blue)
 ![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![Platform](https://img.shields.io/badge/Platform-Android%20|%20Web-orange)
@@ -19,6 +19,7 @@ Lleva Cuentas is a Flutter-based application designed to help users track their 
 - **Expense Categories**: Organize transactions into customizable categories for better tracking and analysis.
 - **Budget Tracking**: Set monthly budgets for different expense categories and monitor your spending against these budgets.
 - **Reports and Analytics**: Generate reports and visualizations to gain insights into your financial habits and trends.
+- **Dashboard & Charts**: Visualize your finances with Pie Charts (distribution by type) and Bar Charts (monthly comparison).
 - **Export Options**: Export your transaction data to PDF format (Downloads automatically on Web).
 - **Security**: Protect your financial data with password protection and secure storage mechanisms.
 
@@ -53,6 +54,7 @@ You can access the Web PWA version here: https://llevacuentas.netlify.app/
 Lleva Cuentas is built using Flutter and utilizes various packages for its functionality. Key dependencies include:
 
 - `sqflite` / `sqflite_common_ffi_web` (Database)
+- `fl_chart` (Charts and visualizations)
 - `pdf` (Document generation)
 - `path_provider` (File system access)
 - `intl` (Localization)
@@ -82,7 +84,7 @@ Here are some potential next steps and improvements planned for Lleva Cuentas:
 
 - [x] **Migration to Newer Version of Flutter**: Upgrade the app to utilize the latest features and improvements in Flutter, ensuring compatibility and performance enhancements.
 - [ ] **Enhanced Budgeting Features**: Implement advanced budgeting features such as custom budget periods, recurring transactions, and expense forecasts.
-- [ ] **Improved Reporting**: Enhance reporting capabilities with additional visualization options, customizable report templates, and data export formats.
+- [x] **Improved Reporting**: Enhance reporting capabilities with additional visualization options, customizable report templates, and data export formats.
 - [ ] **Localization**: Add support for multiple languages to make the app accessible to a wider audience.
 
 Feel free to contribute ideas or suggestions for further improvement!
