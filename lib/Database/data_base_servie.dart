@@ -106,6 +106,21 @@ class DataBaseHelper {
     return transactions;
   }
 
+  Future<List<Map<String, dynamic>>> getMonthlyTransactions(int accountId) async {
+    Database db = await instance.database;
+    final res = await db.rawQuery('''
+      SELECT 
+        strftime('%Y-%m', date) as month,
+        type,
+        SUM(amount) as total
+      FROM Transactions 
+      WHERE accountId = ?
+      GROUP BY strftime('%Y-%m', date), type
+      ORDER BY month DESC
+    ''', [accountId]);
+    return res;
+  }
+
   addTransaction(Transactions transactions) async {
     Database db = await instance.database;
     final res = await db.insert('Transactions', transactions.toJson());
