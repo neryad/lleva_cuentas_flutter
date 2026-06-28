@@ -644,6 +644,7 @@ import 'package:provider/provider.dart';
 import 'package:lleva_cuentas/Amount/pages/amount_pages.dart';
 import 'package:lleva_cuentas/Amount/pages/models/transactions_model.dart';
 import 'package:lleva_cuentas/Database/account_model.dart';
+import 'package:lleva_cuentas/Database/category_model.dart';
 import 'package:lleva_cuentas/Database/data_base_servie.dart';
 import 'package:lleva_cuentas/Home/widgets/alert.dart';
 import 'package:lleva_cuentas/theme_manager.dart';
@@ -992,141 +993,193 @@ class _DetailsPageState extends State<DetailsPage> {
       iconData = Icons.arrow_upward_rounded;
     }
 
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+    return FutureBuilder<Category?>(
+      future: t.categoriaId != null
+          ? DataBaseHelper.instance.getCategoryById(t.categoriaId!)
+          : Future.value(null),
+      builder: (context, categorySnapshot) {
+        final category = categorySnapshot.data;
+
+        return Container(
+          margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.06),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
-        ],
-      ),
-      child: Material(
-        borderRadius: BorderRadius.circular(16),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: () {},
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 50,
-                        height: 50,
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              iconColor.withOpacity(0.2),
-                              iconColor.withOpacity(0.05),
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
+          child: Material(
+            borderRadius: BorderRadius.circular(16),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(16),
+              onTap: () {},
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 50,
+                            height: 50,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  iconColor.withOpacity(0.2),
+                                  iconColor.withOpacity(0.05),
+                                ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            child: Icon(iconData, color: iconColor, size: 26),
                           ),
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        child: Icon(iconData, color: iconColor, size: 26),
-                      ),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              t.comment,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                color: colorScheme.onSurface,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
+                          const SizedBox(width: 14),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    t.comment,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      color: colorScheme.onSurface,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        DateFormat('MMM d, yyyy')
+                                            .format(DateTime.parse(t.date)),
+                                        style: TextStyle(
+                                          color: colorScheme.onSurfaceVariant,
+                                          fontSize: 12.5,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                      if (category != null) ...[
+                                        const SizedBox(width: 8),
+                                        Builder(
+                                          builder: (context) {
+                                            Color parseColor(String? hex) {
+                                              if (hex == null) return Colors.grey;
+                                              try {
+                                                return Color(int.parse(hex.replaceFirst('#', '0xFF')));
+                                              } catch (_) {
+                                                return Colors.grey;
+                                              }
+                                            }
+                                            final catColor = parseColor(category.color);
+                                            return ConstrainedBox(
+                                              constraints: const BoxConstraints(maxWidth: 100),
+                                              child: Container(
+                                                padding: const EdgeInsets.symmetric(
+                                                    horizontal: 6, vertical: 2),
+                                                decoration: BoxDecoration(
+                                                  color: catColor.withOpacity(0.15),
+                                                  borderRadius: BorderRadius.circular(4),
+                                                ),
+                                                child: Text(
+                                                  category.nombre,
+                                                  maxLines: 1,
+                                                  overflow: TextOverflow.ellipsis,
+                                                  style: TextStyle(
+                                                    color: catColor,
+                                                    fontSize: 10,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ],
+                                    ],
+                                  ),
+                                ],
                               ),
                             ),
-                            const SizedBox(height: 4),
-                            Text(
-                              DateFormat('MMM d, yyyy')
-                                  .format(DateTime.parse(t.date)),
-                              style: TextStyle(
-                                color: colorScheme.onSurfaceVariant,
-                                fontSize: 12.5,
-                                fontWeight: FontWeight.w500,
+                        ],
+                      ),
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          isGasto
+                              ? "-${t.amount.toStringAsFixed(2)}"
+                              : "+${myFormat.format(t.amount.toInt())}",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: isGasto
+                                ? colorScheme.error
+                                : isAhorro
+                                    ? colorScheme.primary
+                                    : Colors.green,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(8),
+                                onTap: () async {
+                                  await editAlert(context, t, colorScheme);
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.all(6.0),
+                                  child: Icon(Icons.edit,
+                                      size: 18, color: colorScheme.primary),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(8),
+                                onTap: () async {
+                                  await deleteAlert(
+                                      context,
+                                      "Seguro de borrar la Transacción",
+                                      t.id,
+                                      'Transactions');
+                                  setState(() {});
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.all(6.0),
+                                  child: Icon(Icons.delete,
+                                      size: 18, color: colorScheme.error),
+                                ),
                               ),
                             ),
                           ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      isGasto
-                          ? "-${t.amount.toStringAsFixed(2)}"
-                          : "+${myFormat.format(t.amount.toInt())}",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: isGasto
-                            ? colorScheme.error
-                            : isAhorro
-                                ? colorScheme.primary
-                                : Colors.green,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(8),
-                            onTap: () async {
-                              await editAlert(context, t, colorScheme);
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.all(6.0),
-                              child: Icon(Icons.edit,
-                                  size: 18, color: colorScheme.primary),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(8),
-                            onTap: () async {
-                              await deleteAlert(
-                                  context,
-                                  "Seguro de borrar la Transacción",
-                                  t.id,
-                                  'Transactions');
-                              setState(() {});
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.all(6.0),
-                              child: Icon(Icons.delete,
-                                  size: 18, color: colorScheme.error),
-                            ),
-                          ),
                         ),
                       ],
                     ),
                   ],
                 ),
-              ],
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
@@ -1137,21 +1190,30 @@ class _DetailsPageState extends State<DetailsPage> {
     final TextEditingController amountController =
         TextEditingController(text: transaction.amount.toString());
     String? selectedType = transaction.type;
+    int? selectedCategoryId = transaction.categoriaId;
+
+    // Load categories for current type
+    List<Category> editCategories = [];
+    Future<void> loadEditCategories(String tipo) async {
+      final categories = await DataBaseHelper.instance.getCategoriesByType(tipo);
+      editCategories = categories.where((c) => c.nombre != 'Sin categoría' && c.nombre != 'General').toList();
+    }
+    await loadEditCategories(selectedType ?? 'Ahorro');
 
     await showDialog(
       barrierDismissible: false,
       context: context,
       builder: (context) {
-        return AlertDialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          title: const Text(
-            'Editar transacción',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          content: StatefulBuilder(
-            builder: (context, dialogSetState) {
-              return Form(
+        return StatefulBuilder(
+          builder: (context, dialogSetState) {
+            return AlertDialog(
+              shape:
+                  RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              title: const Text(
+                'Editar transacción',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              content: Form(
                 key: editFormKey,
                 child: SingleChildScrollView(
                   child: Column(
@@ -1161,44 +1223,91 @@ class _DetailsPageState extends State<DetailsPage> {
                       const SizedBox(height: 16),
                       editAmount(transaction, amountController),
                       const SizedBox(height: 16),
-                      editType(transaction, dialogSetState, selectedType),
+                      editType(transaction, (String? value) {
+                        dialogSetState(() {
+                          selectedType = value!;
+                          selectedCategoryId = null;
+                          loadEditCategories(value);
+                        });
+                      }, selectedType),
+                      const SizedBox(height: 16),
+                      if (editCategories.isNotEmpty)
+                        DropdownButton<int>(
+                          isExpanded: true,
+                          value: selectedCategoryId,
+                          hint: const Text('Sin categoría'),
+                          items: editCategories.map((Category category) {
+                            Color parseColor(String? hex) {
+                              if (hex == null) return Colors.grey;
+                              try {
+                                return Color(int.parse(hex.replaceFirst('#', '0xFF')));
+                              } catch (_) {
+                                return Colors.grey;
+                              }
+                            }
+                            final categoryColor = parseColor(category.color);
+                            return DropdownMenuItem<int>(
+                              value: category.id,
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 12,
+                                    height: 12,
+                                    decoration: BoxDecoration(
+                                      color: categoryColor,
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Text(category.nombre),
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            dialogSetState(() {
+                              selectedCategoryId = value;
+                            });
+                          },
+                        ),
                       const SizedBox(height: 16),
                       editDate(transaction, dialogSetState),
                     ],
                   ),
                 ),
-              );
-            },
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancelar'),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: colorScheme.primary,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
               ),
-              onPressed: () async {
-                if (editFormKey.currentState!.validate()) {
-                  transaction.comment = descriptionController.text;
-                  transaction.amount = double.tryParse(amountController.text) ??
-                      transaction.amount;
-                  transaction.type = selectedType ?? transaction.type;
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Cancelar'),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: colorScheme.primary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  onPressed: () async {
+                    if (editFormKey.currentState!.validate()) {
+                      transaction.comment = descriptionController.text;
+                      transaction.amount = double.tryParse(amountController.text) ??
+                          transaction.amount;
+                      transaction.type = selectedType ?? transaction.type;
+                      transaction.categoriaId = selectedCategoryId;
 
-                  await DataBaseHelper.instance.updateTransaction(transaction);
-                  Navigator.of(context).pop();
-                }
-              },
-              child: const Text('Guardar',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                  )),
-            ),
-          ],
+                      await DataBaseHelper.instance.updateTransaction(transaction);
+                      Navigator.of(context).pop();
+                    }
+                  },
+                  child: const Text('Guardar',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      )),
+                ),
+              ],
+            );
+          },
         );
       },
     );
@@ -1271,7 +1380,7 @@ class _DetailsPageState extends State<DetailsPage> {
     );
   }
 
-  editType(Transactions transaction, StateSetter dialogSetState,
+  editType(Transactions transaction, Function(String?) onTypeChanged,
       String? selectedType) {
     return DropdownButtonFormField<String>(
       value: selectedType,
@@ -1280,9 +1389,7 @@ class _DetailsPageState extends State<DetailsPage> {
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
         prefixIcon: const Icon(Icons.category_outlined),
       ),
-      onChanged: (String? value) => dialogSetState(() {
-        selectedType = value!;
-      }),
+      onChanged: (String? value) => onTypeChanged(value),
       items: items.map((String item) {
         return DropdownMenuItem<String>(value: item, child: Text(item));
       }).toList(),

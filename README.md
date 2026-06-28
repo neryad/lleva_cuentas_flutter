@@ -5,7 +5,7 @@
 # Lleva Cuentas [![Codemagic build status](https://api.codemagic.io/apps/660ef805c47054341ffb6c68/660ef805c47054341ffb6c67/status_badge.svg)](https://codemagic.io/apps/660ef805c47054341ffb6c68/660ef805c47054341ffb6c67/latest_build)
 
 [![Built with Flutter](https://img.shields.io/badge/Built_with-Flutter-blue.svg)](https://flutter.dev/)
-![Version](https://img.shields.io/badge/Version-1.3.0-blue)
+![Version](https://img.shields.io/badge/Version-1.4.0-blue)
 ![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![Platform](https://img.shields.io/badge/Platform-Android%20|%20Web-orange)
@@ -16,11 +16,11 @@ Lleva Cuentas is a Flutter-based application designed to help users track their 
 
 - **Cross-Platform Support**: Available on Android and Web (PWA).
 - **Transaction Management**: Easily add, edit, and categorize income and expense transactions.
-- **Expense Categories**: Organize transactions into customizable categories for better tracking and analysis.
+- **Categories System**: 17 predefined categories organized by type (Ingreso/Gasto/Ahorro) with option to create custom categories.
 - **Budget Tracking**: Set monthly budgets for different expense categories and monitor your spending against these budgets.
 - **Reports and Analytics**: Generate reports and visualizations to gain insights into your financial habits and trends.
-- **Dashboard & Charts**: Visualize your finances with Pie Charts (distribution by type) and Bar Charts (monthly comparison).
-- **Export Options**: Export your transaction data to PDF format (Downloads automatically on Web).
+- **Dashboard & Charts**: Visualize your finances with Pie Charts (distribution by type and category) and Bar Charts (monthly comparison).
+- **Export Options**: Export your transaction data to PDF format with category details (Downloads automatically on Web).
 - **Security**: Protect your financial data with password protection and secure storage mechanisms.
 
 ## Installation

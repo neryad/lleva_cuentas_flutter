@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:lleva_cuentas/Amount/pages/models/transactions_model.dart';
 import 'package:lleva_cuentas/Database/account_model.dart';
+import 'package:lleva_cuentas/Database/category_model.dart';
 import 'package:lleva_cuentas/Database/data_base_servie.dart';
 
 class AmountPage extends StatefulWidget {
@@ -21,6 +22,25 @@ class _AmountPageState extends State<AmountPage> {
   final TextEditingController dateController = TextEditingController();
   final formKey = GlobalKey<FormState>();
   bool _isSaving = false;
+
+  List<Category> _categories = [];
+  int? _selectedCategoryId;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCategories();
+  }
+
+  void _loadCategories() async {
+    final categories = await DataBaseHelper.instance.getCategoriesByType(dropdownValue ?? 'Ahorro');
+    // Filter out "Sin categoría" and "General" from the list for selection
+    final filtered = categories.where((c) => c.nombre != 'Sin categoría' && c.nombre != 'General').toList();
+    setState(() {
+      _categories = filtered;
+      _selectedCategoryId = null;
+    });
+  }
 
   @override
   void dispose() {
@@ -155,6 +175,7 @@ class _AmountPageState extends State<AmountPage> {
                                   onChanged: (value) {
                                     setState(() {
                                       dropdownValue = value.toString();
+                                      _loadCategories();
                                     });
                                   },
                                 ),
@@ -163,6 +184,93 @@ class _AmountPageState extends State<AmountPage> {
                           ],
                         ),
                         const SizedBox(height: 28),
+
+                        // --- Selector de categoría ---
+                        if (_categories.isNotEmpty) ...[
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Categoría',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: colorScheme.onSurface,
+                                  letterSpacing: 0.3,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              Semantics(
+                                label: 'Selector de categoría',
+                                hint: 'Selecciona una categoría para la transacción',
+                                child: Container(
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 12),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: colorScheme.outline,
+                                      width: 1.5,
+                                    ),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: DropdownButton<int>(
+                                    underline: const SizedBox.shrink(),
+                                    isExpanded: true,
+                                    value: _selectedCategoryId,
+                                    hint: Text(
+                                      'Sin categoría',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: colorScheme.onSurface.withOpacity(0.5),
+                                      ),
+                                    ),
+                                    items: _categories.map((Category category) {
+                                      Color parseColor(String? hex) {
+                                        if (hex == null) return Colors.grey;
+                                        try {
+                                          return Color(int.parse(hex.replaceFirst('#', '0xFF')));
+                                        } catch (_) {
+                                          return Colors.grey;
+                                        }
+                                      }
+                                      final categoryColor = parseColor(category.color);
+                                      return DropdownMenuItem<int>(
+                                        value: category.id,
+                                        child: Row(
+                                          children: [
+                                            Container(
+                                              width: 12,
+                                              height: 12,
+                                              decoration: BoxDecoration(
+                                                color: categoryColor,
+                                                shape: BoxShape.circle,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 10),
+                                            Text(
+                                              category.nombre,
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w500,
+                                                color: colorScheme.onSurface,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    }).toList(),
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _selectedCategoryId = value;
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 28),
+                        ],
 
                         // --- Monto ---
                         Column(
@@ -505,6 +613,7 @@ class _AmountPageState extends State<AmountPage> {
         date: savedDate.toString(),
         comment: commentController.text.trim(),
         accountId: widget.account.id!,
+        categoriaId: _selectedCategoryId,
       );
 
       await DataBaseHelper.instance.addTransaction(newTransaction);
