@@ -665,58 +665,6 @@ class _DetailsPageState extends State<DetailsPage> {
   final TextEditingController dateController = TextEditingController();
   final editFormKey = GlobalKey<FormState>();
 
-  // Filter state
-  String? _filterType;
-  int? _filterCategoryId;
-  String? _filterDatePreset;
-  DateTime? _filterStartDate;
-  DateTime? _filterEndDate;
-  List<Category> _categories = [];
-
-  void _applyDatePreset(String? preset) {
-    final now = DateTime.now();
-    switch (preset) {
-      case 'today':
-        _filterStartDate = DateTime(now.year, now.month, now.day);
-        _filterEndDate = DateTime(now.year, now.month, now.day, 23, 59, 59);
-        break;
-      case 'week':
-        _filterStartDate = now.subtract(Duration(days: now.weekday - 1));
-        _filterStartDate = DateTime(_filterStartDate!.year, _filterStartDate!.month, _filterStartDate!.day);
-        _filterEndDate = DateTime(now.year, now.month, now.day, 23, 59, 59);
-        break;
-      case 'month':
-        _filterStartDate = DateTime(now.year, now.month, 1);
-        _filterEndDate = DateTime(now.year, now.month, now.day, 23, 59, 59);
-        break;
-      case 'quarter':
-        final quarterStart = ((now.month - 1) ~/ 3) * 3 + 1;
-        _filterStartDate = DateTime(now.year, quarterStart, 1);
-        _filterEndDate = DateTime(now.year, now.month, now.day, 23, 59, 59);
-        break;
-      case 'year':
-        _filterStartDate = DateTime(now.year, 1, 1);
-        _filterEndDate = DateTime(now.year, now.month, now.day, 23, 59, 59);
-        break;
-      default:
-        _filterStartDate = null;
-        _filterEndDate = null;
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _loadCategories();
-  }
-
-  void _loadCategories() async {
-    final categories = await DataBaseHelper.instance.getCategories();
-    setState(() {
-      _categories = categories;
-    });
-  }
-
   @override
   void dispose() {
     dateController.dispose();
@@ -789,37 +737,18 @@ class _DetailsPageState extends State<DetailsPage> {
               final transactions = snapshot.data ?? [];
               transactions.sort(((a, b) => b.date.compareTo(a.date)));
 
-              // Apply filters
-              final filteredTransactions = transactions.where((t) {
-                if (_filterType != null && t.type != _filterType) return false;
-                if (_filterCategoryId != null && t.categoriaId != _filterCategoryId) return false;
-                if (_filterStartDate != null) {
-                  final tDate = DateTime.parse(t.date);
-                  if (tDate.isBefore(_filterStartDate!)) return false;
-                }
-                if (_filterEndDate != null) {
-                  final tDate = DateTime.parse(t.date);
-                  if (tDate.isAfter(_filterEndDate!)) return false;
-                }
-                return true;
-              }).toList();
-
-              var total = getTotal(filteredTransactions);
+              var total = getTotal(transactions);
               var total2 = myFormat.format(total.toInt());
 
-              var ahorro = filteredTransactions
+              var ahorro = transactions
                   .where((t) => t.type == 'Ahorro')
                   .fold<double>(0, (sum, t) => sum + t.amount);
-              var gasto = filteredTransactions
+              var gasto = transactions
                   .where((t) => t.type == 'Gasto')
                   .fold<double>(0, (sum, t) => sum + t.amount);
-              var ingreso = filteredTransactions
+              var ingreso = transactions
                   .where((t) => t.type == 'Ingreso')
                   .fold<double>(0, (sum, t) => sum + t.amount);
-
-              final bool hasActiveFilters = _filterType != null ||
-                  _filterCategoryId != null ||
-                  _filterDatePreset != null;
 
               return Column(
                 children: [
@@ -944,138 +873,15 @@ class _DetailsPageState extends State<DetailsPage> {
                             ),
                           ),
                           const SizedBox(height: 16),
-                          // --- Filtros ---
-                          if (hasActiveFilters || _categories.isNotEmpty)
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Icon(Icons.filter_list, size: 18, color: colorScheme.primary),
-                                      const SizedBox(width: 6),
-                                      Text(
-                                        'Filtros',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                          color: colorScheme.onSurface,
-                                        ),
-                                      ),
-                                      const Spacer(),
-                                      if (hasActiveFilters)
-                                        TextButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              _filterType = null;
-                                              _filterCategoryId = null;
-                                              _filterDatePreset = null;
-                                              _filterStartDate = null;
-                                              _filterEndDate = null;
-                                            });
-                                          },
-                                          child: const Text('Limpiar'),
-                                        ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 8),
-                                  // Dropdowns row
-                                  Row(
-                                    children: [
-                                      // Type dropdown
-                                      Expanded(
-                                        child: Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                                          decoration: BoxDecoration(
-                                            border: Border.all(color: colorScheme.outline),
-                                            borderRadius: BorderRadius.circular(8),
-                                          ),
-                                          child: DropdownButtonHideUnderline(
-                                            child: DropdownButton<String>(
-                                              isExpanded: true,
-                                              value: _filterType,
-                                              hint: Text('Tipo', style: TextStyle(fontSize: 13, color: colorScheme.onSurfaceVariant)),
-                                              items: [
-                                                const DropdownMenuItem(value: null, child: Text('Todos')),
-                                                const DropdownMenuItem(value: 'Ahorro', child: Text('Ahorro')),
-                                                const DropdownMenuItem(value: 'Gasto', child: Text('Gasto')),
-                                                const DropdownMenuItem(value: 'Ingreso', child: Text('Ingreso')),
-                                              ],
-                                              onChanged: (value) => setState(() => _filterType = value),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      // Category dropdown
-                                      if (_categories.isNotEmpty)
-                                        Expanded(
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 12),
-                                            decoration: BoxDecoration(
-                                              border: Border.all(color: colorScheme.outline),
-                                              borderRadius: BorderRadius.circular(8),
-                                            ),
-                                            child: DropdownButtonHideUnderline(
-                                              child: DropdownButton<int>(
-                                                isExpanded: true,
-                                                value: _filterCategoryId,
-                                                hint: Text('Categoría', style: TextStyle(fontSize: 13, color: colorScheme.onSurfaceVariant)),
-                                                items: [
-                                                  const DropdownMenuItem(value: null, child: Text('Todas')),
-                                                  ..._categories
-                                                      .where((c) => c.nombre != 'Sin categoría' && c.nombre != 'General')
-                                                      .map((c) => DropdownMenuItem(value: c.id, child: Text(c.nombre, overflow: TextOverflow.ellipsis))),
-                                                ],
-                                                onChanged: (value) => setState(() => _filterCategoryId = value),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 8),
-                                  // Date preset dropdown
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                                    decoration: BoxDecoration(
-                                      border: Border.all(color: colorScheme.outline),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: DropdownButtonHideUnderline(
-                                      child: DropdownButton<String>(
-                                        isExpanded: true,
-                                        value: _filterDatePreset,
-                                        hint: Text('Período', style: TextStyle(fontSize: 13, color: colorScheme.onSurfaceVariant)),
-                                        items: const [
-                                          DropdownMenuItem(value: null, child: Text('Todo')),
-                                          DropdownMenuItem(value: 'today', child: Text('Hoy')),
-                                          DropdownMenuItem(value: 'week', child: Text('Esta semana')),
-                                          DropdownMenuItem(value: 'month', child: Text('Este mes')),
-                                          DropdownMenuItem(value: 'quarter', child: Text('Último trimestre')),
-                                          DropdownMenuItem(value: 'year', child: Text('Este año')),
-                                        ],
-                                        onChanged: (value) => setState(() {
-                                          _filterDatePreset = value;
-                                          _applyDatePreset(value);
-                                        }),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                ],
-                              ),
-                            ),
                           Expanded(
                             child: Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 12),
                               child: ListView.builder(
                                 physics: const BouncingScrollPhysics(),
-                                itemCount: filteredTransactions.length,
+                                itemCount: transactions.length,
                                 itemBuilder: (context, index) {
-                                  if (filteredTransactions.isEmpty) {
+                                  if (transactions.isEmpty) {
                                     return Center(
                                       child: Padding(
                                         padding: const EdgeInsets.symmetric(
@@ -1090,9 +896,7 @@ class _DetailsPageState extends State<DetailsPage> {
                                             ),
                                             const SizedBox(height: 12),
                                             Text(
-                                              hasActiveFilters
-                                                  ? 'Sin resultados'
-                                                  : 'Sin transacciones',
+                                              'Sin transacciones',
                                               style: TextStyle(
                                                 color: colorScheme
                                                     .onSurfaceVariant,
@@ -1105,7 +909,7 @@ class _DetailsPageState extends State<DetailsPage> {
                                       ),
                                     );
                                   }
-                                  return card(filteredTransactions[index], context,
+                                  return card(transactions[index], context,
                                       colorScheme);
                                 },
                               ),
