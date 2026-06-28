@@ -647,6 +647,7 @@ import 'package:lleva_cuentas/Database/account_model.dart';
 import 'package:lleva_cuentas/Database/data_base_servie.dart';
 import 'package:lleva_cuentas/Home/widgets/alert.dart';
 import 'package:lleva_cuentas/theme_manager.dart';
+import 'package:lleva_cuentas/Dashboard/pages/dashboard_page.dart';
 
 class DetailsPage extends StatefulWidget {
   const DetailsPage({super.key, required this.account});
@@ -809,6 +810,30 @@ class _DetailsPageState extends State<DetailsPage> {
                               color: colorScheme.error,
                             ),
                           ],
+                        ),
+                        const SizedBox(height: 16),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => DashboardPage(account: account),
+                                ),
+                              );
+                            },
+                            icon: const Icon(Icons.bar_chart),
+                            label: const Text('Ver Dashboard'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: colorScheme.primaryContainer,
+                              foregroundColor: colorScheme.onPrimaryContainer,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                            ),
+                          ),
                         ),
                       ],
                     ),

@@ -730,7 +730,6 @@ import 'package:provider/provider.dart';
 import 'package:lleva_cuentas/Database/data_base_servie.dart';
 import 'package:lleva_cuentas/Details/pages/details_page.dart';
 import 'package:lleva_cuentas/Home/widgets/alert.dart';
-import 'package:lleva_cuentas/Settings/pages/settings_page.dart';
 import 'package:lleva_cuentas/utils/pdf.dart';
 import 'package:lleva_cuentas/theme_manager.dart';
 import '../../Database/account_model.dart';
@@ -803,12 +802,7 @@ class _HomePageState extends State<HomePage> {
                 child: IconButton(
                   icon: const Icon(Icons.settings_outlined, size: 28),
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const SettingsPage(),
-                      ),
-                    );
+                    Navigator.pushNamed(context, '/settings');
                   },
                 ),
               ),
@@ -907,11 +901,11 @@ class _HomePageState extends State<HomePage> {
                       topLeft: Radius.circular(28),
                       topRight: Radius.circular(28),
                     ),
-                    boxShadow: [
+                    boxShadow: const [
                       BoxShadow(
                         color: Colors.black12,
                         blurRadius: 12,
-                        offset: const Offset(0, -4),
+                        offset: Offset(0, -4),
                       ),
                     ],
                   ),

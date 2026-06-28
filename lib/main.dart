@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:lleva_cuentas/Home/pages/home_page.dart';
+import 'package:lleva_cuentas/about/pages/about.dart';
+import 'package:lleva_cuentas/Settings/pages/settings_page.dart';
+import 'package:lleva_cuentas/Settings/pages/legal_page.dart';
 import 'package:lleva_cuentas/theme_manager.dart';
 import 'package:provider/provider.dart';
 
@@ -78,7 +81,13 @@ class MyApp extends StatelessWidget {
           title: 'Lleva Cuentas',
           debugShowCheckedModeBanner: false,
           theme: themeManager.getThemeData(),
-          home: const HomePage(),
+          initialRoute: '/',
+          routes: {
+            '/': (context) => const HomePage(),
+            '/settings': (context) => const SettingsPage(),
+            '/legal': (context) => const LegalPage(),
+            '/about': (context) => const AboutPage(),
+          },
         );
       },
     );
