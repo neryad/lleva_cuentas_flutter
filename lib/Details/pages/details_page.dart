@@ -948,83 +948,67 @@ class _DetailsPageState extends State<DetailsPage> {
                                     ],
                                   ),
                                   const SizedBox(height: 8),
-                                  // Type filter
-                                  SingleChildScrollView(
-                                    scrollDirection: Axis.horizontal,
-                                    child: Row(
-                                      children: [
-                                        _filterChip(
-                                          label: 'Todos',
-                                          selected: _filterType == null,
-                                          onTap: () => setState(() => _filterType = null),
-                                          colorScheme: colorScheme,
+                                  // Dropdowns row
+                                  Row(
+                                    children: [
+                                      // Type dropdown
+                                      Expanded(
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                                          decoration: BoxDecoration(
+                                            border: Border.all(color: colorScheme.outline),
+                                            borderRadius: BorderRadius.circular(8),
+                                          ),
+                                          child: DropdownButtonHideUnderline(
+                                            child: DropdownButton<String>(
+                                              isExpanded: true,
+                                              value: _filterType,
+                                              hint: Text('Tipo', style: TextStyle(fontSize: 13, color: colorScheme.onSurfaceVariant)),
+                                              items: [
+                                                const DropdownMenuItem(value: null, child: Text('Todos')),
+                                                const DropdownMenuItem(value: 'Ahorro', child: Text('Ahorro')),
+                                                const DropdownMenuItem(value: 'Gasto', child: Text('Gasto')),
+                                                const DropdownMenuItem(value: 'Ingreso', child: Text('Ingreso')),
+                                              ],
+                                              onChanged: (value) => setState(() => _filterType = value),
+                                            ),
+                                          ),
                                         ),
-                                        const SizedBox(width: 6),
-                                        _filterChip(
-                                          label: 'Ahorro',
-                                          selected: _filterType == 'Ahorro',
-                                          onTap: () => setState(() => _filterType = _filterType == 'Ahorro' ? null : 'Ahorro'),
-                                          colorScheme: colorScheme,
-                                          icon: Icons.savings,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      // Category dropdown
+                                      if (_categories.isNotEmpty)
+                                        Expanded(
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                                            decoration: BoxDecoration(
+                                              border: Border.all(color: colorScheme.outline),
+                                              borderRadius: BorderRadius.circular(8),
+                                            ),
+                                            child: DropdownButtonHideUnderline(
+                                              child: DropdownButton<int>(
+                                                isExpanded: true,
+                                                value: _filterCategoryId,
+                                                hint: Text('Categoría', style: TextStyle(fontSize: 13, color: colorScheme.onSurfaceVariant)),
+                                                items: [
+                                                  const DropdownMenuItem(value: null, child: Text('Todas')),
+                                                  ..._categories
+                                                      .where((c) => c.nombre != 'Sin categoría' && c.nombre != 'General')
+                                                      .map((c) => DropdownMenuItem(value: c.id, child: Text(c.nombre, overflow: TextOverflow.ellipsis))),
+                                                ],
+                                                onChanged: (value) => setState(() => _filterCategoryId = value),
+                                              ),
+                                            ),
+                                          ),
                                         ),
-                                        const SizedBox(width: 6),
-                                        _filterChip(
-                                          label: 'Gasto',
-                                          selected: _filterType == 'Gasto',
-                                          onTap: () => setState(() => _filterType = _filterType == 'Gasto' ? null : 'Gasto'),
-                                          colorScheme: colorScheme,
-                                          icon: Icons.arrow_downward_rounded,
-                                        ),
-                                        const SizedBox(width: 6),
-                                        _filterChip(
-                                          label: 'Ingreso',
-                                          selected: _filterType == 'Ingreso',
-                                          onTap: () => setState(() => _filterType = _filterType == 'Ingreso' ? null : 'Ingreso'),
-                                          colorScheme: colorScheme,
-                                          icon: Icons.arrow_upward_rounded,
-                                        ),
-                                      ],
-                                    ),
+                                    ],
                                   ),
                                   const SizedBox(height: 8),
-                                  // Category filter
-                                  if (_categories.isNotEmpty)
-                                    SingleChildScrollView(
-                                      scrollDirection: Axis.horizontal,
-                                      child: Row(
-                                        children: [
-                                          _filterChip(
-                                            label: 'Todas',
-                                            selected: _filterCategoryId == null,
-                                            onTap: () => setState(() => _filterCategoryId = null),
-                                            colorScheme: colorScheme,
-                                          ),
-                                          const SizedBox(width: 6),
-                                          ..._categories.where((c) => c.nombre != 'Sin categoría' && c.nombre != 'General').map((category) {
-                                            return Padding(
-                                              padding: const EdgeInsets.only(right: 6),
-                                              child: _filterChip(
-                                                label: category.nombre,
-                                                selected: _filterCategoryId == category.id,
-                                                onTap: () => setState(() => _filterCategoryId = _filterCategoryId == category.id ? null : category.id),
-                                                colorScheme: colorScheme,
-                                              ),
-                                            );
-                                          }),
-                                        ],
-                                      ),
-                                    ),
-                                  const SizedBox(height: 8),
-                                  // Date filter
-                                  SingleChildScrollView(
-                                    scrollDirection: Axis.horizontal,
-                                    child: Row(
-                                      children: [
-                                        _filterChip(
-                                          label: _filterStartDate != null
-                                              ? 'Desde: ${_filterStartDate!.day}/${_filterStartDate!.month}/${_filterStartDate!.year}'
-                                              : 'Fecha inicio',
-                                          selected: _filterStartDate != null,
+                                  // Date row
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: GestureDetector(
                                           onTap: () async {
                                             final date = await showDatePicker(
                                               context: context,
@@ -1034,14 +1018,36 @@ class _DetailsPageState extends State<DetailsPage> {
                                             );
                                             if (date != null) setState(() => _filterStartDate = date);
                                           },
-                                          colorScheme: colorScheme,
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                                            decoration: BoxDecoration(
+                                              border: Border.all(color: colorScheme.outline),
+                                              borderRadius: BorderRadius.circular(8),
+                                            ),
+                                            child: Row(
+                                              children: [
+                                                Icon(Icons.calendar_today, size: 16, color: colorScheme.onSurfaceVariant),
+                                                const SizedBox(width: 8),
+                                                Expanded(
+                                                  child: Text(
+                                                    _filterStartDate != null
+                                                        ? '${_filterStartDate!.day}/${_filterStartDate!.month}/${_filterStartDate!.year}'
+                                                        : 'Desde',
+                                                    style: TextStyle(
+                                                      fontSize: 13,
+                                                      color: _filterStartDate != null ? colorScheme.onSurface : colorScheme.onSurfaceVariant,
+                                                    ),
+                                                    overflow: TextOverflow.ellipsis,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
                                         ),
-                                        const SizedBox(width: 6),
-                                        _filterChip(
-                                          label: _filterEndDate != null
-                                              ? 'Hasta: ${_filterEndDate!.day}/${_filterEndDate!.month}/${_filterEndDate!.year}'
-                                              : 'Fecha fin',
-                                          selected: _filterEndDate != null,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Expanded(
+                                        child: GestureDetector(
                                           onTap: () async {
                                             final date = await showDatePicker(
                                               context: context,
@@ -1051,12 +1057,36 @@ class _DetailsPageState extends State<DetailsPage> {
                                             );
                                             if (date != null) setState(() => _filterEndDate = date);
                                           },
-                                          colorScheme: colorScheme,
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                                            decoration: BoxDecoration(
+                                              border: Border.all(color: colorScheme.outline),
+                                              borderRadius: BorderRadius.circular(8),
+                                            ),
+                                            child: Row(
+                                              children: [
+                                                Icon(Icons.calendar_today, size: 16, color: colorScheme.onSurfaceVariant),
+                                                const SizedBox(width: 8),
+                                                Expanded(
+                                                  child: Text(
+                                                    _filterEndDate != null
+                                                        ? '${_filterEndDate!.day}/${_filterEndDate!.month}/${_filterEndDate!.year}'
+                                                        : 'Hasta',
+                                                    style: TextStyle(
+                                                      fontSize: 13,
+                                                      color: _filterEndDate != null ? colorScheme.onSurface : colorScheme.onSurfaceVariant,
+                                                    ),
+                                                    overflow: TextOverflow.ellipsis,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
                                         ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
-                                  const SizedBox(height: 12),
+                                  const SizedBox(height: 8),
                                 ],
                               ),
                             ),
@@ -1153,48 +1183,6 @@ class _DetailsPageState extends State<DetailsPage> {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _filterChip({
-    required String label,
-    required bool selected,
-    required VoidCallback onTap,
-    required ColorScheme colorScheme,
-    IconData? icon,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        decoration: BoxDecoration(
-          color: selected
-              ? colorScheme.primary
-              : colorScheme.surfaceContainerHighest,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: selected ? colorScheme.primary : colorScheme.outline,
-            width: 1,
-          ),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (icon != null) ...[
-              Icon(icon, size: 14, color: selected ? colorScheme.onPrimary : colorScheme.onSurface),
-              const SizedBox(width: 4),
-            ],
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-                color: selected ? colorScheme.onPrimary : colorScheme.onSurface,
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 
