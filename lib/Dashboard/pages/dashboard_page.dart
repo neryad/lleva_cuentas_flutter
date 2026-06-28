@@ -5,6 +5,7 @@ import 'package:lleva_cuentas/Database/account_model.dart';
 import 'package:lleva_cuentas/Database/data_base_servie.dart';
 import 'package:lleva_cuentas/Dashboard/widgets/bar_chart_widget.dart';
 import 'package:lleva_cuentas/Dashboard/widgets/pie_chart_widget.dart';
+import 'package:fl_chart/fl_chart.dart';
 
 class DashboardPage extends StatelessWidget {
   final Account account;
@@ -129,6 +130,128 @@ class DashboardPage extends StatelessWidget {
                       child: Padding(
                         padding: const EdgeInsets.all(16),
                         child: BarChartWidget(monthlyData: monthlyData),
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 24),
+                FutureBuilder<List<Map<String, dynamic>>>(
+                  future: DataBaseHelper.instance
+                      .getTransactionsByCategory(account.id!),
+                  builder: (context, categorySnapshot) {
+                    if (categorySnapshot.connectionState ==
+                        ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    final categoryData = categorySnapshot.data ?? [];
+                    if (categoryData.isEmpty) {
+                      return const SizedBox.shrink();
+                    }
+                    return Card(
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Distribución por Categoría',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: colorScheme.onSurface,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            SizedBox(
+                              height: 200,
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: PieChart(
+                                      PieChartData(
+                                        sectionsSpace: 2,
+                                        centerSpaceRadius: 40,
+                                        sections: categoryData
+                                            .map((e) {
+                                          Color parseColor(dynamic value) {
+                                            if (value == null) return Colors.grey;
+                                            try {
+                                              final hex = value.toString().replaceFirst('#', '0xFF');
+                                              return Color(int.parse(hex));
+                                            } catch (_) {
+                                              return Colors.grey;
+                                            }
+                                          }
+                                          final color = parseColor(e['color']);
+                                          final total = categoryData.fold<double>(
+                                              0, (sum, item) => sum + (item['total'] as double));
+                                          final percentage = total > 0
+                                              ? ((e['total'] as double) / total * 100)
+                                              : 0.0;
+                                          return PieChartSectionData(
+                                            value: e['total'] as double,
+                                            color: color,
+                                            title: '${percentage.round()}%',
+                                            radius: 50,
+                                            titleStyle: const TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                            ),
+                                          );
+                                        }).toList(),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: categoryData
+                                        .take(5)
+                                        .map((e) {
+                                      Color parseColor(dynamic value) {
+                                        if (value == null) return Colors.grey;
+                                        try {
+                                          final hex = value.toString().replaceFirst('#', '0xFF');
+                                          return Color(int.parse(hex));
+                                        } catch (_) {
+                                          return Colors.grey;
+                                        }
+                                      }
+                                      final color = parseColor(e['color']);
+                                      return Padding(
+                                        padding: const EdgeInsets.symmetric(vertical: 4),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Container(
+                                              width: 12,
+                                              height: 12,
+                                              decoration: BoxDecoration(
+                                                color: color,
+                                                shape: BoxShape.circle,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 6),
+                                            Text(
+                                              '${e['category'] ?? 'Sin categoría'}: \$${(e['total'] as double).toStringAsFixed(0)}',
+                                              style: const TextStyle(fontSize: 11),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    }).toList(),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     );
                   },

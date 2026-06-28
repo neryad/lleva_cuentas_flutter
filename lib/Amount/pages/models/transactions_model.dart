@@ -1,7 +1,3 @@
-// To parse this JSON data, do
-//
-//     final transactions = transactionsFromJson(jsonString);
-
 import 'dart:convert';
 
 Transactions transactionsFromJson(String str) =>
@@ -17,6 +13,7 @@ class Transactions {
     required this.date,
     required this.comment,
     required this.accountId,
+    this.categoriaId,
   });
 
   int? id;
@@ -25,7 +22,10 @@ class Transactions {
   String date;
   String comment;
   int accountId;
+  int? categoriaId;
+
   isSaving() => type == 'Ahorro' || type == 'Ingreso';
+
   factory Transactions.fromJson(Map<String, dynamic> json) => Transactions(
         id: json["id"],
         type: json["type"],
@@ -33,6 +33,7 @@ class Transactions {
         date: json["date"],
         comment: json["comment"],
         accountId: json["accountId"],
+        categoriaId: json["categoria_id"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -42,5 +43,6 @@ class Transactions {
         "date": date,
         "comment": comment,
         "accountId": accountId,
+        "categoria_id": categoriaId,
       };
 }
