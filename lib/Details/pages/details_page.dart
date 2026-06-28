@@ -665,6 +665,26 @@ class _DetailsPageState extends State<DetailsPage> {
   final TextEditingController dateController = TextEditingController();
   final editFormKey = GlobalKey<FormState>();
 
+  // Filter state
+  String? _filterType;
+  int? _filterCategoryId;
+  DateTime? _filterStartDate;
+  DateTime? _filterEndDate;
+  List<Category> _categories = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCategories();
+  }
+
+  void _loadCategories() async {
+    final categories = await DataBaseHelper.instance.getCategories();
+    setState(() {
+      _categories = categories;
+    });
+  }
+
   @override
   void dispose() {
     dateController.dispose();
@@ -737,18 +757,38 @@ class _DetailsPageState extends State<DetailsPage> {
               final transactions = snapshot.data ?? [];
               transactions.sort(((a, b) => b.date.compareTo(a.date)));
 
-              var total = getTotal(transactions);
+              // Apply filters
+              final filteredTransactions = transactions.where((t) {
+                if (_filterType != null && t.type != _filterType) return false;
+                if (_filterCategoryId != null && t.categoriaId != _filterCategoryId) return false;
+                if (_filterStartDate != null) {
+                  final tDate = DateTime.parse(t.date);
+                  if (tDate.isBefore(_filterStartDate!)) return false;
+                }
+                if (_filterEndDate != null) {
+                  final tDate = DateTime.parse(t.date);
+                  if (tDate.isAfter(_filterEndDate!)) return false;
+                }
+                return true;
+              }).toList();
+
+              var total = getTotal(filteredTransactions);
               var total2 = myFormat.format(total.toInt());
 
-              var ahorro = transactions
+              var ahorro = filteredTransactions
                   .where((t) => t.type == 'Ahorro')
                   .fold<double>(0, (sum, t) => sum + t.amount);
-              var gasto = transactions
+              var gasto = filteredTransactions
                   .where((t) => t.type == 'Gasto')
                   .fold<double>(0, (sum, t) => sum + t.amount);
-              var ingreso = transactions
+              var ingreso = filteredTransactions
                   .where((t) => t.type == 'Ingreso')
                   .fold<double>(0, (sum, t) => sum + t.amount);
+
+              final bool hasActiveFilters = _filterType != null ||
+                  _filterCategoryId != null ||
+                  _filterStartDate != null ||
+                  _filterEndDate != null;
 
               return Column(
                 children: [
@@ -873,15 +913,162 @@ class _DetailsPageState extends State<DetailsPage> {
                             ),
                           ),
                           const SizedBox(height: 16),
+                          // --- Filtros ---
+                          if (hasActiveFilters || _categories.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Icon(Icons.filter_list, size: 18, color: colorScheme.primary),
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        'Filtros',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                          color: colorScheme.onSurface,
+                                        ),
+                                      ),
+                                      const Spacer(),
+                                      if (hasActiveFilters)
+                                        TextButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              _filterType = null;
+                                              _filterCategoryId = null;
+                                              _filterStartDate = null;
+                                              _filterEndDate = null;
+                                            });
+                                          },
+                                          child: const Text('Limpiar'),
+                                        ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 8),
+                                  // Type filter
+                                  SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    child: Row(
+                                      children: [
+                                        _filterChip(
+                                          label: 'Todos',
+                                          selected: _filterType == null,
+                                          onTap: () => setState(() => _filterType = null),
+                                          colorScheme: colorScheme,
+                                        ),
+                                        const SizedBox(width: 6),
+                                        _filterChip(
+                                          label: 'Ahorro',
+                                          selected: _filterType == 'Ahorro',
+                                          onTap: () => setState(() => _filterType = _filterType == 'Ahorro' ? null : 'Ahorro'),
+                                          colorScheme: colorScheme,
+                                          icon: Icons.savings,
+                                        ),
+                                        const SizedBox(width: 6),
+                                        _filterChip(
+                                          label: 'Gasto',
+                                          selected: _filterType == 'Gasto',
+                                          onTap: () => setState(() => _filterType = _filterType == 'Gasto' ? null : 'Gasto'),
+                                          colorScheme: colorScheme,
+                                          icon: Icons.arrow_downward_rounded,
+                                        ),
+                                        const SizedBox(width: 6),
+                                        _filterChip(
+                                          label: 'Ingreso',
+                                          selected: _filterType == 'Ingreso',
+                                          onTap: () => setState(() => _filterType = _filterType == 'Ingreso' ? null : 'Ingreso'),
+                                          colorScheme: colorScheme,
+                                          icon: Icons.arrow_upward_rounded,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  // Category filter
+                                  if (_categories.isNotEmpty)
+                                    SingleChildScrollView(
+                                      scrollDirection: Axis.horizontal,
+                                      child: Row(
+                                        children: [
+                                          _filterChip(
+                                            label: 'Todas',
+                                            selected: _filterCategoryId == null,
+                                            onTap: () => setState(() => _filterCategoryId = null),
+                                            colorScheme: colorScheme,
+                                          ),
+                                          const SizedBox(width: 6),
+                                          ..._categories.where((c) => c.nombre != 'Sin categoría' && c.nombre != 'General').map((category) {
+                                            return Padding(
+                                              padding: const EdgeInsets.only(right: 6),
+                                              child: _filterChip(
+                                                label: category.nombre,
+                                                selected: _filterCategoryId == category.id,
+                                                onTap: () => setState(() => _filterCategoryId = _filterCategoryId == category.id ? null : category.id),
+                                                colorScheme: colorScheme,
+                                              ),
+                                            );
+                                          }),
+                                        ],
+                                      ),
+                                    ),
+                                  const SizedBox(height: 8),
+                                  // Date filter
+                                  SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    child: Row(
+                                      children: [
+                                        _filterChip(
+                                          label: _filterStartDate != null
+                                              ? 'Desde: ${_filterStartDate!.day}/${_filterStartDate!.month}/${_filterStartDate!.year}'
+                                              : 'Fecha inicio',
+                                          selected: _filterStartDate != null,
+                                          onTap: () async {
+                                            final date = await showDatePicker(
+                                              context: context,
+                                              initialDate: _filterStartDate ?? DateTime.now(),
+                                              firstDate: DateTime(2020),
+                                              lastDate: DateTime.now(),
+                                            );
+                                            if (date != null) setState(() => _filterStartDate = date);
+                                          },
+                                          colorScheme: colorScheme,
+                                        ),
+                                        const SizedBox(width: 6),
+                                        _filterChip(
+                                          label: _filterEndDate != null
+                                              ? 'Hasta: ${_filterEndDate!.day}/${_filterEndDate!.month}/${_filterEndDate!.year}'
+                                              : 'Fecha fin',
+                                          selected: _filterEndDate != null,
+                                          onTap: () async {
+                                            final date = await showDatePicker(
+                                              context: context,
+                                              initialDate: _filterEndDate ?? DateTime.now(),
+                                              firstDate: DateTime(2020),
+                                              lastDate: DateTime.now(),
+                                            );
+                                            if (date != null) setState(() => _filterEndDate = date);
+                                          },
+                                          colorScheme: colorScheme,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 12),
+                                ],
+                              ),
+                            ),
                           Expanded(
                             child: Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 12),
                               child: ListView.builder(
                                 physics: const BouncingScrollPhysics(),
-                                itemCount: transactions.length,
+                                itemCount: filteredTransactions.length,
                                 itemBuilder: (context, index) {
-                                  if (transactions.isEmpty) {
+                                  if (filteredTransactions.isEmpty) {
                                     return Center(
                                       child: Padding(
                                         padding: const EdgeInsets.symmetric(
@@ -896,7 +1083,9 @@ class _DetailsPageState extends State<DetailsPage> {
                                             ),
                                             const SizedBox(height: 12),
                                             Text(
-                                              'Sin transacciones',
+                                              hasActiveFilters
+                                                  ? 'Sin resultados'
+                                                  : 'Sin transacciones',
                                               style: TextStyle(
                                                 color: colorScheme
                                                     .onSurfaceVariant,
@@ -909,7 +1098,7 @@ class _DetailsPageState extends State<DetailsPage> {
                                       ),
                                     );
                                   }
-                                  return card(transactions[index], context,
+                                  return card(filteredTransactions[index], context,
                                       colorScheme);
                                 },
                               ),
@@ -964,6 +1153,48 @@ class _DetailsPageState extends State<DetailsPage> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _filterChip({
+    required String label,
+    required bool selected,
+    required VoidCallback onTap,
+    required ColorScheme colorScheme,
+    IconData? icon,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: selected
+              ? colorScheme.primary
+              : colorScheme.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: selected ? colorScheme.primary : colorScheme.outline,
+            width: 1,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (icon != null) ...[
+              Icon(icon, size: 14, color: selected ? colorScheme.onPrimary : colorScheme.onSurface),
+              const SizedBox(width: 4),
+            ],
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                color: selected ? colorScheme.onPrimary : colorScheme.onSurface,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
