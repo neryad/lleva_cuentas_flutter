@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:lleva_cuentas/Database/category_model.dart';
+import 'package:lleva_cuentas/Database/data_base_servie.dart';
+import 'package:lleva_cuentas/Settings/pages/categories_page.dart';
 import 'package:lleva_cuentas/theme_manager.dart';
 import 'package:provider/provider.dart';
 
@@ -238,6 +241,54 @@ class _SettingsPageState extends State<SettingsPage> {
                         ),
                       ],
                     ),
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                // --- Sección de Categorías ---
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Categorías',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: Theme.of(context).colorScheme.outline,
+                            width: 1,
+                          ),
+                        ),
+                        child: ListTile(
+                          leading: Icon(
+                            Icons.category_outlined,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                          title: const Text('Gestionar Categorías'),
+                          subtitle: const Text('Crear, editar o eliminar categorías'),
+                          trailing:
+                              const Icon(Icons.arrow_forward_ios, size: 18),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const CategoriesPage(),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 ),
 

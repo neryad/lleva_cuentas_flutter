@@ -16,15 +16,16 @@ class ApiPdf {
     final transactions = await DataBaseHelper.instance.getTransactionsById(id);
     transactions.sort(((a, b) => b.date.compareTo(a.date)));
 
+    final body = await documentBody(transactions);
+
     pdf.addPage(MultiPage(
         build: (context) => [
               documentTitle(account!),
               SizedBox(height: 3 * PdfPageFormat.cm),
               buildTitle(account),
-              documentBody(transactions),
+              body,
               Divider(),
               buildTotal(transactions),
-              // buildFooter(transactions)
             ],
         footer: (context) => buildFooter()));
 
@@ -130,19 +131,27 @@ class ApiPdf {
     );
   }
 
-  static documentBody(List<Transactions> transactions) {
-    final header = ['Descripción', 'Fecha', 'Tipo', 'Monto'];
+  static documentBody(List<Transactions> transactions) async {
+    final header = ['Descripción', 'Fecha', 'Tipo', 'Categoría', 'Monto'];
 
-    final filterData = transactions.map((e) {
+    final filterData = await Future.wait(transactions.map((e) async {
       var date = DateFormat('MMM d, yyyy').format(DateTime.parse(e.date));
+      String categoryName = 'Sin categoría';
+      if (e.categoriaId != null) {
+        final category = await DataBaseHelper.instance.getCategoryById(e.categoriaId!);
+        if (category != null) {
+          categoryName = category.nombre;
+        }
+      }
 
       return [
         e.comment,
         date,
         e.type,
+        categoryName,
         e.amount,
       ];
-    }).toList();
+    }).toList());
 
     return Table.fromTextArray(
       headers: header,
@@ -155,9 +164,8 @@ class ApiPdf {
         0: Alignment.centerLeft,
         1: Alignment.centerRight,
         2: Alignment.centerRight,
-        3: Alignment.centerRight,
+        3: Alignment.centerLeft,
         4: Alignment.centerRight,
-        5: Alignment.centerRight,
       },
     );
   }
