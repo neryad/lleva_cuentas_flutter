@@ -668,9 +668,41 @@ class _DetailsPageState extends State<DetailsPage> {
   // Filter state
   String? _filterType;
   int? _filterCategoryId;
+  String? _filterDatePreset;
   DateTime? _filterStartDate;
   DateTime? _filterEndDate;
   List<Category> _categories = [];
+
+  void _applyDatePreset(String? preset) {
+    final now = DateTime.now();
+    switch (preset) {
+      case 'today':
+        _filterStartDate = DateTime(now.year, now.month, now.day);
+        _filterEndDate = DateTime(now.year, now.month, now.day, 23, 59, 59);
+        break;
+      case 'week':
+        _filterStartDate = now.subtract(Duration(days: now.weekday - 1));
+        _filterStartDate = DateTime(_filterStartDate!.year, _filterStartDate!.month, _filterStartDate!.day);
+        _filterEndDate = DateTime(now.year, now.month, now.day, 23, 59, 59);
+        break;
+      case 'month':
+        _filterStartDate = DateTime(now.year, now.month, 1);
+        _filterEndDate = DateTime(now.year, now.month, now.day, 23, 59, 59);
+        break;
+      case 'quarter':
+        final quarterStart = ((now.month - 1) ~/ 3) * 3 + 1;
+        _filterStartDate = DateTime(now.year, quarterStart, 1);
+        _filterEndDate = DateTime(now.year, now.month, now.day, 23, 59, 59);
+        break;
+      case 'year':
+        _filterStartDate = DateTime(now.year, 1, 1);
+        _filterEndDate = DateTime(now.year, now.month, now.day, 23, 59, 59);
+        break;
+      default:
+        _filterStartDate = null;
+        _filterEndDate = null;
+    }
+  }
 
   @override
   void initState() {
@@ -787,8 +819,7 @@ class _DetailsPageState extends State<DetailsPage> {
 
               final bool hasActiveFilters = _filterType != null ||
                   _filterCategoryId != null ||
-                  _filterStartDate != null ||
-                  _filterEndDate != null;
+                  _filterDatePreset != null;
 
               return Column(
                 children: [
@@ -939,6 +970,7 @@ class _DetailsPageState extends State<DetailsPage> {
                                             setState(() {
                                               _filterType = null;
                                               _filterCategoryId = null;
+                                              _filterDatePreset = null;
                                               _filterStartDate = null;
                                               _filterEndDate = null;
                                             });
@@ -1004,87 +1036,32 @@ class _DetailsPageState extends State<DetailsPage> {
                                     ],
                                   ),
                                   const SizedBox(height: 8),
-                                  // Date row
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: GestureDetector(
-                                          onTap: () async {
-                                            final date = await showDatePicker(
-                                              context: context,
-                                              initialDate: _filterStartDate ?? DateTime.now(),
-                                              firstDate: DateTime(2020),
-                                              lastDate: DateTime.now(),
-                                            );
-                                            if (date != null) setState(() => _filterStartDate = date);
-                                          },
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                                            decoration: BoxDecoration(
-                                              border: Border.all(color: colorScheme.outline),
-                                              borderRadius: BorderRadius.circular(8),
-                                            ),
-                                            child: Row(
-                                              children: [
-                                                Icon(Icons.calendar_today, size: 16, color: colorScheme.onSurfaceVariant),
-                                                const SizedBox(width: 8),
-                                                Expanded(
-                                                  child: Text(
-                                                    _filterStartDate != null
-                                                        ? '${_filterStartDate!.day}/${_filterStartDate!.month}/${_filterStartDate!.year}'
-                                                        : 'Desde',
-                                                    style: TextStyle(
-                                                      fontSize: 13,
-                                                      color: _filterStartDate != null ? colorScheme.onSurface : colorScheme.onSurfaceVariant,
-                                                    ),
-                                                    overflow: TextOverflow.ellipsis,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
+                                  // Date preset dropdown
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                                    decoration: BoxDecoration(
+                                      border: Border.all(color: colorScheme.outline),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: DropdownButtonHideUnderline(
+                                      child: DropdownButton<String>(
+                                        isExpanded: true,
+                                        value: _filterDatePreset,
+                                        hint: Text('Período', style: TextStyle(fontSize: 13, color: colorScheme.onSurfaceVariant)),
+                                        items: const [
+                                          DropdownMenuItem(value: null, child: Text('Todo')),
+                                          DropdownMenuItem(value: 'today', child: Text('Hoy')),
+                                          DropdownMenuItem(value: 'week', child: Text('Esta semana')),
+                                          DropdownMenuItem(value: 'month', child: Text('Este mes')),
+                                          DropdownMenuItem(value: 'quarter', child: Text('Último trimestre')),
+                                          DropdownMenuItem(value: 'year', child: Text('Este año')),
+                                        ],
+                                        onChanged: (value) => setState(() {
+                                          _filterDatePreset = value;
+                                          _applyDatePreset(value);
+                                        }),
                                       ),
-                                      const SizedBox(width: 8),
-                                      Expanded(
-                                        child: GestureDetector(
-                                          onTap: () async {
-                                            final date = await showDatePicker(
-                                              context: context,
-                                              initialDate: _filterEndDate ?? DateTime.now(),
-                                              firstDate: DateTime(2020),
-                                              lastDate: DateTime.now(),
-                                            );
-                                            if (date != null) setState(() => _filterEndDate = date);
-                                          },
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                                            decoration: BoxDecoration(
-                                              border: Border.all(color: colorScheme.outline),
-                                              borderRadius: BorderRadius.circular(8),
-                                            ),
-                                            child: Row(
-                                              children: [
-                                                Icon(Icons.calendar_today, size: 16, color: colorScheme.onSurfaceVariant),
-                                                const SizedBox(width: 8),
-                                                Expanded(
-                                                  child: Text(
-                                                    _filterEndDate != null
-                                                        ? '${_filterEndDate!.day}/${_filterEndDate!.month}/${_filterEndDate!.year}'
-                                                        : 'Hasta',
-                                                    style: TextStyle(
-                                                      fontSize: 13,
-                                                      color: _filterEndDate != null ? colorScheme.onSurface : colorScheme.onSurfaceVariant,
-                                                    ),
-                                                    overflow: TextOverflow.ellipsis,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                                    ),
                                   ),
                                   const SizedBox(height: 8),
                                 ],
