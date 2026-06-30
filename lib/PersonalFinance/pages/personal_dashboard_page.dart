@@ -3,6 +3,7 @@ import 'package:fl_chart/fl_chart.dart';
 import '../../Database/data_base_servie.dart';
 import '../../Database/category_model.dart';
 import '../../Amount/pages/models/transactions_model.dart';
+import '../../utils/error_helpers.dart';
 
 class PersonalDashboardPage extends StatefulWidget {
   const PersonalDashboardPage({super.key});
@@ -46,10 +47,13 @@ class _PersonalDashboardPageState extends State<PersonalDashboardPage> {
       future: _db.getPersonalTransactions(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
+          return buildLoadingWidget();
         }
         if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
+          return buildErrorWidget(
+            'No se pudieron cargar los datos del gráfico',
+            () => setState(() {}),
+          );
         }
 
         final transactions = snapshot.data ?? [];
@@ -77,7 +81,9 @@ class _PersonalDashboardPageState extends State<PersonalDashboardPage> {
                     (monthlyData[key]!['gastos'] ?? 0) + t.amount;
               }
             }
-          } catch (_) {}
+          } catch (e) {
+            debugPrint('Fecha malformada en transacción: ${t.date}');
+          }
         }
 
         final barGroups = <BarChartGroupData>[];
@@ -186,10 +192,13 @@ class _PersonalDashboardPageState extends State<PersonalDashboardPage> {
       future: _db.getPersonalTransactions(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
+          return buildLoadingWidget();
         }
         if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
+          return buildErrorWidget(
+            'No se pudieron cargar las categorías',
+            () => setState(() {}),
+          );
         }
 
         final transactions = snapshot.data ?? [];
@@ -306,10 +315,13 @@ class _PersonalDashboardPageState extends State<PersonalDashboardPage> {
       future: _db.getPersonalTransactions(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
+          return buildLoadingWidget();
         }
         if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
+          return buildErrorWidget(
+            'No se pudieron cargar los datos de balance',
+            () => setState(() {}),
+          );
         }
 
         final transactions = snapshot.data ?? [];
@@ -335,7 +347,9 @@ class _PersonalDashboardPageState extends State<PersonalDashboardPage> {
                 monthlyBalance[key] = monthlyBalance[key]! - t.amount;
               }
             }
-          } catch (_) {}
+          } catch (e) {
+            debugPrint('Fecha malformada en transacción: ${t.date}');
+          }
         }
 
         final spots = <FlSpot>[];

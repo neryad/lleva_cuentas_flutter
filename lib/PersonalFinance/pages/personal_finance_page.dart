@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../Database/data_base_servie.dart';
 import '../../Amount/pages/models/transactions_model.dart';
+import '../../utils/error_helpers.dart';
 import '../widgets/summary_card.dart';
 import '../utils/responsive_constants.dart';
 import 'presupuestos_page.dart';
@@ -62,25 +63,13 @@ class _PersonalFinancePageState extends State<PersonalFinancePage> {
         future: _db.getPersonalTransactions(mes: _mesActual, anio: _anioActual),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.error_outline, color: Colors.red, size: 48),
-                  const SizedBox(height: 16),
-                  Text('Error: ${snapshot.error}'),
-                  const SizedBox(height: 16),
-                  ElevatedButton.icon(
-                    onPressed: () => setState(() {}),
-                    icon: const Icon(Icons.refresh),
-                    label: const Text('Reintentar'),
-                  ),
-                ],
-              ),
+            return buildErrorWidget(
+              'No se pudieron cargar las transacciones',
+              () => setState(() {}),
             );
           }
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return buildLoadingWidget();
           }
 
           final transactions = snapshot.data ?? [];

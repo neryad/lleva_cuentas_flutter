@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import '../../Database/data_base_servie.dart';
 import '../../Database/category_model.dart';
 import '../../Amount/pages/models/transactions_model.dart';
+import '../../utils/error_helpers.dart';
 
 class AddPersonalTransactionPage extends StatefulWidget {
   final String? initialType;
@@ -170,9 +171,16 @@ class _AddPersonalTransactionPageState extends State<AddPersonalTransactionPage>
       source: 'personal',
     );
 
-    await DataBaseHelper.instance.addTransaction(transaction);
-    if (mounted) {
-      Navigator.pop(context);
+    try {
+      await DataBaseHelper.instance.addTransaction(transaction);
+      if (mounted) {
+        showSuccessSnackBar(context, 'Transacción guardada');
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      if (mounted) {
+        showErrorSnackBar(context, 'No se pudo guardar la transacción');
+      }
     }
   }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../Database/data_base_servie.dart';
 import '../../Database/category_model.dart';
+import '../../utils/error_helpers.dart';
 import '../models/presupuesto_model.dart';
 import '../widgets/budget_progress_card.dart';
 
@@ -50,18 +51,19 @@ class _PresupuestosPageState extends State<PresupuestosPage> {
           future: _db.getPresupuestos(_mes, _anio),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
+              return buildLoadingWidget();
             }
             if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
+              return buildErrorWidget(
+                'No se pudieron cargar los presupuestos',
+                () => setState(() {}),
+              );
             }
 
             final presupuestos = snapshot.data ?? [];
             if (presupuestos.isEmpty) {
-            return const Center(
-              child: Text('No hay presupuestos este mes'),
-            );
-          }
+              return buildEmptyWidget('No hay presupuestos este mes');
+            }
 
           return FutureBuilder<Map<int, double>>(
             future: _db.getGastosPorCategoria(_mes, _anio),
@@ -149,9 +151,16 @@ class _PresupuestosPageState extends State<PresupuestosPage> {
                     anio: _anio,
                   );
                   Navigator.of(context).pop();
-                  await _db.newPresupuesto(presupuesto);
-                  if (mounted) {
-                    setState(() {});
+                  try {
+                    await _db.newPresupuesto(presupuesto);
+                    if (mounted) {
+                      showSuccessSnackBar(context, 'Presupuesto guardado');
+                      setState(() {});
+                    }
+                  } catch (e) {
+                    if (mounted) {
+                      showErrorSnackBar(context, 'No se pudo guardar el presupuesto');
+                    }
                   }
                 }
               },

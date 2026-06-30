@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../Database/data_base_servie.dart';
 import '../../Database/category_model.dart';
+import '../../utils/error_helpers.dart';
 import '../models/gasto_recurrente_model.dart';
 import '../widgets/recurring_expense_card.dart';
 
@@ -45,18 +46,19 @@ class _GastosRecurrentesPageState extends State<GastosRecurrentesPage> {
           future: _db.getGastosRecurrentes(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
+              return buildLoadingWidget();
             }
             if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
+              return buildErrorWidget(
+                'No se pudieron cargar los gastos recurrentes',
+                () => setState(() {}),
+              );
             }
 
             final gastos = snapshot.data ?? [];
             if (gastos.isEmpty) {
-            return const Center(
-              child: Text('No hay gastos recurrentes'),
-            );
-          }
+              return buildEmptyWidget('No hay gastos recurrentes');
+            }
 
           return ListView.builder(
             itemCount: gastos.length,
@@ -79,9 +81,15 @@ class _GastosRecurrentesPageState extends State<GastosRecurrentesPage> {
                 diaPago: g.diaPago,
                 activo: g.activo,
                 onToggle: (value) async {
-                  g.activo = value;
-                  await _db.updateGastoRecurrente(g);
-                  setState(() {});
+                  try {
+                    g.activo = value;
+                    await _db.updateGastoRecurrente(g);
+                    setState(() {});
+                  } catch (e) {
+                    if (mounted) {
+                      showErrorSnackBar(context, 'No se pudo actualizar el gasto');
+                    }
+                  }
                 },
                 onDelete: () => _deleteRecurring(g),
               );
@@ -200,8 +208,17 @@ class _GastosRecurrentesPageState extends State<GastosRecurrentesPage> {
       ),
     );
     if (confirm == true) {
-      await _db.deleteGastoRecurrente(gasto.id!);
-      setState(() {});
+      try {
+        await _db.deleteGastoRecurrente(gasto.id!);
+        if (mounted) {
+          showSuccessSnackBar(context, 'Gasto eliminado');
+          setState(() {});
+        }
+      } catch (e) {
+        if (mounted) {
+          showErrorSnackBar(context, 'No se pudo eliminar el gasto');
+        }
+      }
     }
   }
 }

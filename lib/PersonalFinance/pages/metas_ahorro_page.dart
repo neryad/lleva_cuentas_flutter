@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../Database/data_base_servie.dart';
+import '../../utils/error_helpers.dart';
 import '../models/meta_ahorro_model.dart';
 import '../widgets/savings_goal_card.dart';
 
@@ -31,18 +32,19 @@ class _MetasAhorroPageState extends State<MetasAhorroPage> {
           future: _db.getMetasAhorro(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
+              return buildLoadingWidget();
             }
             if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
+              return buildErrorWidget(
+                'No se pudieron cargar las metas de ahorro',
+                () => setState(() {}),
+              );
             }
 
             final metas = snapshot.data ?? [];
             if (metas.isEmpty) {
-            return const Center(
-              child: Text('No hay metas de ahorro'),
-            );
-          }
+              return buildEmptyWidget('No hay metas de ahorro');
+            }
 
           return ListView.builder(
             itemCount: metas.length,
@@ -137,10 +139,17 @@ class _MetasAhorroPageState extends State<MetasAhorroPage> {
                         montoObjetivo: double.parse(montoController.text),
                         fechaLimite: fechaLimite?.toIso8601String(),
                       );
-                      await _db.newMetaAhorro(meta);
-                      if (mounted) {
-                        Navigator.pop(context);
-                        setState(() {});
+                      Navigator.pop(context);
+                      try {
+                        await _db.newMetaAhorro(meta);
+                        if (mounted) {
+                          showSuccessSnackBar(context, 'Meta creada');
+                          setState(() {});
+                        }
+                      } catch (e) {
+                        if (mounted) {
+                          showErrorSnackBar(context, 'No se pudo crear la meta');
+                        }
                       }
                     }
                   },
@@ -189,10 +198,17 @@ class _MetasAhorroPageState extends State<MetasAhorroPage> {
                     color: meta.color,
                     completada: nuevoMonto >= meta.montoObjetivo,
                   );
-                  await _db.updateMetaAhorro(actualizado);
-                  if (mounted) {
-                    Navigator.pop(context);
-                    setState(() {});
+                  Navigator.pop(context);
+                  try {
+                    await _db.updateMetaAhorro(actualizado);
+                    if (mounted) {
+                      showSuccessSnackBar(context, 'Dinero agregado');
+                      setState(() {});
+                    }
+                  } catch (e) {
+                    if (mounted) {
+                      showErrorSnackBar(context, 'No se pudo agregar el dinero');
+                    }
                   }
                 }
               },
