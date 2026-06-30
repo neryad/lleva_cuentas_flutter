@@ -20,10 +20,22 @@ class _OnboardingPageState extends State<OnboardingPage> {
       color: Colors.green,
     ),
     _OnboardingItem(
+      icon: Icons.category,
+      title: 'Categorías',
+      description: 'Organiza tus gastos por categoría: alimentación, transporte, servicios y más.',
+      color: Colors.teal,
+    ),
+    _OnboardingItem(
       icon: Icons.savings,
       title: 'Presupuestos y Metas',
       description: 'Controla tu dinero con presupuestos mensuales y metas de ahorro.',
       color: Colors.orange,
+    ),
+    _OnboardingItem(
+      icon: Icons.people,
+      title: 'Cuentas de Terceros',
+      description: 'Lleva el control del dinero que manejas con otras personas: quién te debe y a quién le debes.',
+      color: Colors.purple,
     ),
     _OnboardingItem(
       icon: Icons.bar_chart,
