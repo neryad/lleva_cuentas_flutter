@@ -1,12 +1,13 @@
 import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:pdf/pdf.dart';
-import 'package:pdf/widgets.dart' as pw;
-import '../../Amount/pages/models/transactions_model.dart';
+import 'package:pdf/widgets.dart' as pw';
 import '../../Database/data_base_servie.dart';
 import '../../utils/file_handle_api.dart';
 
 class PersonalPdf {
   static Future<void> generaPdf({int? mes, int? anio}) async {
+    await initializeDateFormatting('es');
     final pdf = pw.Document();
     final transactions =
         await DataBaseHelper.instance.getPersonalTransactions(mes: mes, anio: anio);

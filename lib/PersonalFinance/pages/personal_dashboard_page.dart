@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../../Database/data_base_servie.dart';
+import '../../Database/category_model.dart';
 import '../../Amount/pages/models/transactions_model.dart';
 
 class PersonalDashboardPage extends StatefulWidget {
@@ -162,125 +163,224 @@ class _PersonalDashboardPageState extends State<PersonalDashboardPage> {
   }
 
   Widget _buildCategoryPieChart() {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Distribución por categoría',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+    return FutureBuilder<List<Transactions>>(
+      future: _db.getPersonalTransactions(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        }
+
+        final transactions = snapshot.data ?? [];
+        final gastos = transactions.where((t) => t.type == 'Gasto').toList();
+
+        if (gastos.isEmpty) {
+          return const Card(
+            child: Padding(
+              padding: EdgeInsets.all(16),
+              child: Center(child: Text('No hay gastos para mostrar')),
             ),
-            const SizedBox(height: 16),
-            SizedBox(
-              height: 200,
-              child: PieChart(
-                PieChartData(
-                  sections: [
-                    PieChartSectionData(
-                      value: 40,
-                      title: 'Alimentación',
-                      color: Colors.orange,
-                      radius: 80,
+          );
+        }
+
+        return FutureBuilder<List<Category>>(
+          future: _db.getCategories(),
+          builder: (context, catSnapshot) {
+            final categorias = catSnapshot.data ?? [];
+
+            final Map<String, double> categoryTotals = {};
+            for (var t in gastos) {
+              String nombre = 'Otros';
+              if (t.categoriaId != null) {
+                final cat = categorias.where((c) => c.id == t.categoriaId);
+                if (cat.isNotEmpty) nombre = cat.first.nombre;
+              }
+              categoryTotals[nombre] = (categoryTotals[nombre] ?? 0) + t.amount;
+            }
+
+            final total = categoryTotals.values.fold(0.0, (a, b) => a + b);
+            final colors = [
+              Colors.orange, Colors.blue, Colors.purple, Colors.green,
+              Colors.red, Colors.teal, Colors.amber, Colors.indigo,
+            ];
+
+            final sections = categoryTotals.entries.toList().asMap().entries.map((entry) {
+              final index = entry.key;
+              final e = entry.value;
+              final porcentaje = total > 0 ? (e.value / total * 100).toStringAsFixed(0) : '0';
+              return PieChartSectionData(
+                value: e.value,
+                title: '$porcentaje%',
+                color: colors[index % colors.length],
+                radius: 80,
+                titleStyle: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              );
+            }).toList();
+
+            return Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Distribución por categoría',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
-                    PieChartSectionData(
-                      value: 25,
-                      title: 'Transporte',
-                      color: Colors.blue,
-                      radius: 80,
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      height: 200,
+                      child: PieChart(
+                        PieChartData(
+                          sections: sections,
+                          sectionsSpace: 2,
+                          centerSpaceRadius: 40,
+                        ),
+                      ),
                     ),
-                    PieChartSectionData(
-                      value: 20,
-                      title: 'Servicios',
-                      color: Colors.purple,
-                      radius: 80,
-                    ),
-                    PieChartSectionData(
-                      value: 15,
-                      title: 'Otros',
-                      color: Colors.grey,
-                      radius: 80,
-                    ),
+                    const SizedBox(height: 8),
+                    ...categoryTotals.entries.toList().asMap().entries.map((entry) {
+                      final index = entry.key;
+                      final e = entry.value;
+                      final porcentaje = total > 0 ? (e.value / total * 100).toStringAsFixed(0) : '0';
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 2),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 12,
+                              height: 12,
+                              decoration: BoxDecoration(
+                                color: colors[index % colors.length],
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Text('${e.key}: $porcentaje%'),
+                          ],
+                        ),
+                      );
+                    }),
                   ],
-                  sectionsSpace: 2,
-                  centerSpaceRadius: 40,
                 ),
               ),
-            ),
-          ],
-        ),
-      ),
+            );
+          },
+        );
+      },
     );
   }
 
   Widget _buildBalanceLineChart() {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Evolución del balance',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            SizedBox(
-              height: 200,
-              child: LineChart(
-                LineChartData(
-                  gridData: const FlGridData(show: false),
-                  titlesData: FlTitlesData(
-                    bottomTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        getTitlesWidget: (value, meta) {
-                          final months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'];
-                          if (value.toInt() < months.length) {
-                            return Text(months[value.toInt()]);
-                          }
-                          return const Text('');
-                        },
+    return FutureBuilder<List<Transactions>>(
+      future: _db.getPersonalTransactions(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        }
+
+        final transactions = snapshot.data ?? [];
+        final now = DateTime.now();
+        final Map<int, double> monthlyBalance = {};
+
+        for (int i = 5; i >= 0; i--) {
+          final month = DateTime(now.year, now.month - i, 1);
+          monthlyBalance[month.month] = 0;
+        }
+
+        for (var t in transactions) {
+          final date = DateTime.parse(t.date);
+          final monthKey = date.month;
+          if (monthlyBalance.containsKey(monthKey)) {
+            if (t.type == 'Ingreso' || t.type == 'Ahorro') {
+              monthlyBalance[monthKey] = monthlyBalance[monthKey]! + t.amount;
+            } else {
+              monthlyBalance[monthKey] = monthlyBalance[monthKey]! - t.amount;
+            }
+          }
+        }
+
+        final spots = <FlSpot>[];
+        final monthLabels = <String>[];
+        final months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+        int index = 0;
+
+        monthlyBalance.forEach((month, balance) {
+          spots.add(FlSpot(index.toDouble(), balance));
+          monthLabels.add(months[month - 1]);
+          index++;
+        });
+
+        return Card(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Evolución del balance',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  height: 200,
+                  child: LineChart(
+                    LineChartData(
+                      gridData: const FlGridData(show: false),
+                      titlesData: FlTitlesData(
+                        bottomTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            getTitlesWidget: (value, meta) {
+                              final i = value.toInt();
+                              if (i < monthLabels.length) {
+                                return Text(monthLabels[i]);
+                              }
+                              return const Text('');
+                            },
+                          ),
+                        ),
+                        leftTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            reservedSize: 40,
+                            getTitlesWidget: (value, meta) {
+                              return Text('\$${value.toInt()}');
+                            },
+                          ),
+                        ),
                       ),
-                    ),
-                    leftTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        reservedSize: 40,
-                        getTitlesWidget: (value, meta) {
-                          return Text('\$${value.toInt()}');
-                        },
-                      ),
+                      borderData: FlBorderData(show: false),
+                      lineBarsData: [
+                        LineChartBarData(
+                          spots: spots,
+                          isCurved: true,
+                          color: Colors.blue,
+                          barWidth: 3,
+                          dotData: const FlDotData(show: true),
+                          belowBarData: BarAreaData(
+                            show: true,
+                            color: Colors.blue.withValues(alpha: 0.1),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  borderData: FlBorderData(show: false),
-                  lineBarsData: [
-                    LineChartBarData(
-                      spots: const [
-                        FlSpot(0, 1000),
-                        FlSpot(1, 1500),
-                        FlSpot(2, 800),
-                        FlSpot(3, 2000),
-                        FlSpot(4, 1800),
-                        FlSpot(5, 2500),
-                      ],
-                      isCurved: true,
-                      color: Colors.blue,
-                      barWidth: 3,
-                      dotData: const FlDotData(show: true),
-                      belowBarData: BarAreaData(
-                        show: true,
-                        color: Colors.blue.withValues(alpha: 0.1),
-                      ),
-                    ),
-                  ],
                 ),
-              ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }
