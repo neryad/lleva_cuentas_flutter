@@ -163,7 +163,7 @@ class _PersonalDashboardPageState extends State<PersonalDashboardPage> {
     );
   }
 
-  double _getMaxValue(Map<int, Map<String, double>> data) {
+  double _getMaxValue(Map<String, Map<String, double>> data) {
     double max = 0;
     for (var monthData in data.values) {
       if ((monthData['ingresos'] ?? 0) > max) max = monthData['ingresos']!;
