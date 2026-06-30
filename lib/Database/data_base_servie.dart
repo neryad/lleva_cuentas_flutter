@@ -110,7 +110,7 @@ class DataBaseHelper {
         // Column already exists
       }
 
-      await db.execute('''CREATE TABLE Presupuestos (
+      await db.execute('''CREATE TABLE IF NOT EXISTS Presupuestos (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         categoria_id INTEGER NOT NULL,
         monto_limite REAL NOT NULL,
@@ -119,7 +119,7 @@ class DataBaseHelper {
         FOREIGN KEY (categoria_id) REFERENCES Categories(id)
       )''');
 
-      await db.execute('''CREATE TABLE MetasAhorro (
+      await db.execute('''CREATE TABLE IF NOT EXISTS MetasAhorro (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         nombre TEXT NOT NULL,
         monto_objetivo REAL NOT NULL,
@@ -129,7 +129,7 @@ class DataBaseHelper {
         completada INTEGER DEFAULT 0
       )''');
 
-      await db.execute('''CREATE TABLE GastosRecurrentes (
+      await db.execute('''CREATE TABLE IF NOT EXISTS GastosRecurrentes (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         descripcion TEXT NOT NULL,
         monto REAL NOT NULL,
