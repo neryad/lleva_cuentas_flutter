@@ -45,18 +45,19 @@ class _PresupuestosPageState extends State<PresupuestosPage> {
           ),
         ],
       ),
-      body: FutureBuilder<List<Presupuesto>>(
-        future: _db.getPresupuestos(_mes, _anio),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          }
+      body: SafeArea(
+        child: FutureBuilder<List<Presupuesto>>(
+          future: _db.getPresupuestos(_mes, _anio),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            }
 
-          final presupuestos = snapshot.data ?? [];
-          if (presupuestos.isEmpty) {
+            final presupuestos = snapshot.data ?? [];
+            if (presupuestos.isEmpty) {
             return const Center(
               child: Text('No hay presupuestos este mes'),
             );
@@ -90,7 +91,8 @@ class _PresupuestosPageState extends State<PresupuestosPage> {
               );
             },
           );
-        },
+          },
+        ),
       ),
     );
   }

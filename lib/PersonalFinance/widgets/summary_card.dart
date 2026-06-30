@@ -44,25 +44,30 @@ class SummaryCard extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _SummaryItem(
-                  label: 'Ingresos',
-                  amount: ingresos,
-                  color: Colors.green,
-                  formatter: formatter,
+                Expanded(
+                  child: _SummaryItem(
+                    label: 'Ingresos',
+                    amount: ingresos,
+                    color: Colors.green,
+                    formatter: formatter,
+                  ),
                 ),
-                _SummaryItem(
-                  label: 'Gastos',
-                  amount: gastos,
-                  color: Colors.red,
-                  formatter: formatter,
+                Expanded(
+                  child: _SummaryItem(
+                    label: 'Gastos',
+                    amount: gastos,
+                    color: Colors.red,
+                    formatter: formatter,
+                  ),
                 ),
-                _SummaryItem(
-                  label: 'Balance',
-                  amount: balance,
-                  color: balance >= 0 ? Colors.blue : Colors.red,
-                  formatter: formatter,
+                Expanded(
+                  child: _SummaryItem(
+                    label: 'Balance',
+                    amount: balance,
+                    color: balance >= 0 ? Colors.blue : Colors.red,
+                    formatter: formatter,
+                  ),
                 ),
               ],
             ),
@@ -95,6 +100,7 @@ class _SummaryItem extends StatelessWidget {
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: Colors.grey,
               ),
+          overflow: TextOverflow.ellipsis,
         ),
         const SizedBox(height: 4),
         Text(
@@ -104,6 +110,7 @@ class _SummaryItem extends StatelessWidget {
             fontWeight: FontWeight.bold,
             color: color,
           ),
+          overflow: TextOverflow.ellipsis,
         ),
       ],
     );

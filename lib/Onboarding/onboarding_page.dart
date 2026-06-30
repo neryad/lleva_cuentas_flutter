@@ -76,29 +76,33 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 },
                 itemBuilder: (context, index) {
                   final item = _items[index];
+                  final screenWidth = MediaQuery.sizeOf(context).width;
+                  final padding = screenWidth > 400 ? 40.0 : 24.0;
+                  final iconSize = screenWidth > 400 ? 120.0 : 80.0;
+                  final iconInnerSize = screenWidth > 400 ? 60.0 : 40.0;
                   return Padding(
-                    padding: const EdgeInsets.all(40),
+                    padding: EdgeInsets.all(padding),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Container(
-                          width: 120,
-                          height: 120,
+                          width: iconSize,
+                          height: iconSize,
                           decoration: BoxDecoration(
                             color: item.color.withValues(alpha: 0.15),
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
                             item.icon,
-                            size: 60,
+                            size: iconInnerSize,
                             color: item.color,
                           ),
                         ),
                         const SizedBox(height: 40),
                         Text(
                           item.title,
-                          style: const TextStyle(
-                            fontSize: 24,
+                          style: TextStyle(
+                            fontSize: screenWidth > 400 ? 24 : 20,
                             fontWeight: FontWeight.bold,
                           ),
                           textAlign: TextAlign.center,
@@ -107,7 +111,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                         Text(
                           item.description,
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: screenWidth > 400 ? 16 : 14,
                             color: Colors.grey.shade600,
                           ),
                           textAlign: TextAlign.center,

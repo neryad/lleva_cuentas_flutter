@@ -40,20 +40,18 @@ class SavingsGoalCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    if (completada)
-                      const Icon(Icons.check_circle, color: Colors.green, size: 20)
-                    else
-                      const Icon(Icons.savings, color: Colors.blue, size: 20),
-                    const SizedBox(width: 8),
-                    Text(
-                      nombre,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ],
+                if (completada)
+                  const Icon(Icons.check_circle, color: Colors.green, size: 20)
+                else
+                  const Icon(Icons.savings, color: Colors.blue, size: 20),
+                const SizedBox(width: 8),
+                Flexible(
+                  child: Text(
+                    nombre,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
                 if (onDelete != null)
                   IconButton(
@@ -74,17 +72,21 @@ class SavingsGoalCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  '${formatter.format(montoActual)} / ${formatter.format(montoObjetivo)}',
-                  style: TextStyle(color: Colors.grey.shade600),
+                Flexible(
+                  child: Text(
+                    '${formatter.format(montoActual)} / ${formatter.format(montoObjetivo)}',
+                    style: TextStyle(color: Colors.grey.shade600),
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-                if (fechaLimite != null)
+                if (fechaLimite != null) ...[
+                  const SizedBox(width: 8),
                   Text(
                     'Meta: $fechaLimite',
                     style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
                   ),
+                ],
               ],
             ),
             if (!completada && onAddMoney != null)

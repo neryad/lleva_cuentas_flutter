@@ -33,17 +33,23 @@ class BudgetProgressCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  categoriaNombre,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                Flexible(
+                  child: Text(
+                    categoriaNombre,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-                Text(
-                  '${formatter.format(montoGastado)} / ${formatter.format(montoLimite)}',
-                  style: TextStyle(
-                    color: excedido ? Colors.red : Colors.grey,
-                    fontWeight: excedido ? FontWeight.bold : FontWeight.normal,
+                const SizedBox(width: 8),
+                Flexible(
+                  child: Text(
+                    '${formatter.format(montoGastado)} / ${formatter.format(montoLimite)}',
+                    style: TextStyle(
+                      color: excedido ? Colors.red : Colors.grey,
+                      fontWeight: excedido ? FontWeight.bold : FontWeight.normal,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],

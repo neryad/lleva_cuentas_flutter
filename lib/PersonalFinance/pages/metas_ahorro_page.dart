@@ -26,18 +26,19 @@ class _MetasAhorroPageState extends State<MetasAhorroPage> {
           ),
         ],
       ),
-      body: FutureBuilder<List<MetaAhorro>>(
-        future: _db.getMetasAhorro(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          }
+      body: SafeArea(
+        child: FutureBuilder<List<MetaAhorro>>(
+          future: _db.getMetasAhorro(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            }
 
-          final metas = snapshot.data ?? [];
-          if (metas.isEmpty) {
+            final metas = snapshot.data ?? [];
+            if (metas.isEmpty) {
             return const Center(
               child: Text('No hay metas de ahorro'),
             );
@@ -61,7 +62,8 @@ class _MetasAhorroPageState extends State<MetasAhorroPage> {
               );
             },
           );
-        },
+          },
+        ),
       ),
     );
   }

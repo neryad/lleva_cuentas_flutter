@@ -40,18 +40,19 @@ class _GastosRecurrentesPageState extends State<GastosRecurrentesPage> {
           ),
         ],
       ),
-      body: FutureBuilder<List<GastoRecurrente>>(
-        future: _db.getGastosRecurrentes(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          }
+      body: SafeArea(
+        child: FutureBuilder<List<GastoRecurrente>>(
+          future: _db.getGastosRecurrentes(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            }
 
-          final gastos = snapshot.data ?? [];
-          if (gastos.isEmpty) {
+            final gastos = snapshot.data ?? [];
+            if (gastos.isEmpty) {
             return const Center(
               child: Text('No hay gastos recurrentes'),
             );
@@ -86,7 +87,8 @@ class _GastosRecurrentesPageState extends State<GastosRecurrentesPage> {
               );
             },
           );
-        },
+          },
+        ),
       ),
     );
   }

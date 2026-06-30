@@ -18,17 +18,24 @@ class _PersonalDashboardPageState extends State<PersonalDashboardPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Dashboard Finanzas Personales')),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildMonthlyBarChart(),
-            const SizedBox(height: 24),
-            _buildCategoryPieChart(),
-            const SizedBox(height: 24),
-            _buildBalanceLineChart(),
-          ],
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 800),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildMonthlyBarChart(),
+                  const SizedBox(height: 24),
+                  _buildCategoryPieChart(),
+                  const SizedBox(height: 24),
+                  _buildBalanceLineChart(),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );
@@ -118,7 +125,7 @@ class _PersonalDashboardPageState extends State<PersonalDashboardPage> {
                 ),
                 const SizedBox(height: 16),
                 SizedBox(
-                  height: 200,
+                  height: MediaQuery.sizeOf(context).height * 0.25,
                   child: BarChart(
                     BarChartData(
                       alignment: BarChartAlignment.spaceAround,
@@ -247,7 +254,7 @@ class _PersonalDashboardPageState extends State<PersonalDashboardPage> {
                     ),
                     const SizedBox(height: 16),
                     SizedBox(
-                      height: 200,
+                      height: MediaQuery.sizeOf(context).height * 0.25,
                       child: PieChart(
                         PieChartData(
                           sections: sections,
@@ -274,15 +281,20 @@ class _PersonalDashboardPageState extends State<PersonalDashboardPage> {
                               ),
                             ),
                             const SizedBox(width: 8),
-                            Text('${e.key}: $porcentaje%'),
+                            Flexible(
+                              child: Text(
+                                '${e.key}: $porcentaje%',
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
                           ],
                         ),
                       );
                     }),
-                  ],
-                ),
-              ),
-            );
+              ],
+            ),
+          ),
+        );
           },
         );
       },
@@ -351,7 +363,7 @@ class _PersonalDashboardPageState extends State<PersonalDashboardPage> {
                 ),
                 const SizedBox(height: 16),
                 SizedBox(
-                  height: 200,
+                  height: MediaQuery.sizeOf(context).height * 0.25,
                   child: LineChart(
                     LineChartData(
                       gridData: const FlGridData(show: false),

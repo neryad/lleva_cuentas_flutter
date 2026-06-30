@@ -51,17 +51,18 @@ class _AddPersonalTransactionPageState extends State<AddPersonalTransactionPage>
       appBar: AppBar(
         title: const Text('Nueva transacción'),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              SegmentedButton<String>(
-                segments: const [
-                  ButtonSegment(value: 'Gasto', label: Text('Gasto')),
-                  ButtonSegment(value: 'Ingreso', label: Text('Ingreso')),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                SegmentedButton<String>(
+                  segments: const [
+                    ButtonSegment(value: 'Gasto', label: Text('Gasto')),
+                    ButtonSegment(value: 'Ingreso', label: Text('Ingreso')),
                   ButtonSegment(value: 'Ahorro', label: Text('Ahorro')),
                 ],
                 selected: {_type},
@@ -151,6 +152,7 @@ class _AddPersonalTransactionPageState extends State<AddPersonalTransactionPage>
             ],
           ),
         ),
+      ),
       ),
     );
   }

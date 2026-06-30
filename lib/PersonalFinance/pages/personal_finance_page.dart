@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import '../../Database/data_base_servie.dart';
 import '../../Amount/pages/models/transactions_model.dart';
 import '../widgets/summary_card.dart';
+import '../utils/responsive_constants.dart';
 import 'presupuestos_page.dart';
 import 'metas_ahorro_page.dart';
 import 'gastos_recurrentes_page.dart';
@@ -94,47 +95,46 @@ class _PersonalFinancePageState extends State<PersonalFinancePage> {
           }
           final balance = ingresos - gastos;
 
-          return SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SummaryCard(
-                  ingresos: ingresos,
-                  gastos: gastos,
-                  balance: balance,
-                  mes: _mesActual,
-                  anio: _anioActual,
-                ),
-                _buildQuickAccessGrid(context),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: Text(
-                    'Transacciones recientes',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                ),
-                if (transactions.isEmpty)
-                  const Padding(
-                    padding: EdgeInsets.all(32),
-                    child: Center(
+          return SafeArea(
+            child: SingleChildScrollView(
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 800),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SummaryCard(
+                        ingresos: ingresos,
+                        gastos: gastos,
+                        balance: balance,
+                      mes: _mesActual,
+                      anio: _anioActual,
+                    ),
+                    _buildQuickAccessGrid(context),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       child: Text(
-                        'No hay transacciones este mes',
-                        style: TextStyle(color: Colors.grey),
+                        'Transacciones recientes',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                     ),
-                  )
-                else
-                  ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: transactions.length,
-                    itemBuilder: (context, index) {
-                      final t = transactions[index];
-                      return _buildTransactionTile(t);
-                    },
-                  ),
-              ],
+                    if (transactions.isEmpty)
+                      const Padding(
+                        padding: EdgeInsets.all(32),
+                        child: Center(
+                          child: Text(
+                            'No hay transacciones este mes',
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                        ),
+                      )
+                    else
+                      ...transactions.map((t) => _buildTransactionTile(t)),
+                  ],
+                ),
+              ),
             ),
+          ),
           );
         },
       ),
@@ -157,53 +157,58 @@ class _PersonalFinancePageState extends State<PersonalFinancePage> {
   Widget _buildQuickAccessGrid(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: GridView.count(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        crossAxisCount: 3,
-        crossAxisSpacing: 8,
-        mainAxisSpacing: 8,
-        children: [
-          _QuickAccessCard(
-            icon: Icons.add_circle,
-            label: 'Ingreso',
-            color: Colors.green,
-            onTap: () => _addTransaction('Ingreso'),
-          ),
-          _QuickAccessCard(
-            icon: Icons.remove_circle,
-            label: 'Gasto',
-            color: Colors.red,
-            onTap: () => _addTransaction('Gasto'),
-          ),
-          _QuickAccessCard(
-            icon: Icons.account_balance,
-            label: 'Presupuestos',
-            color: Colors.orange,
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const PresupuestosPage()),
-            ),
-          ),
-          _QuickAccessCard(
-            icon: Icons.savings,
-            label: 'Metas',
-            color: Colors.blue,
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const MetasAhorroPage()),
-            ),
-          ),
-          _QuickAccessCard(
-            icon: Icons.repeat,
-            label: 'Recurrentes',
-            color: Colors.purple,
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const GastosRecurrentesPage()),
-            ),
-          ),
-        ],
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final crossAxisCount = constraints.maxWidth > mediumScreenMinWidth ? 4 : 3;
+          return GridView.count(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisCount: crossAxisCount,
+            crossAxisSpacing: 8,
+            mainAxisSpacing: 8,
+            children: [
+              _QuickAccessCard(
+                icon: Icons.add_circle,
+                label: 'Ingreso',
+                color: Colors.green,
+                onTap: () => _addTransaction('Ingreso'),
+              ),
+              _QuickAccessCard(
+                icon: Icons.remove_circle,
+                label: 'Gasto',
+                color: Colors.red,
+                onTap: () => _addTransaction('Gasto'),
+              ),
+              _QuickAccessCard(
+                icon: Icons.account_balance,
+                label: 'Presupuestos',
+                color: Colors.orange,
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const PresupuestosPage()),
+                ),
+              ),
+              _QuickAccessCard(
+                icon: Icons.savings,
+                label: 'Metas',
+                color: Colors.blue,
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const MetasAhorroPage()),
+                ),
+              ),
+              _QuickAccessCard(
+                icon: Icons.repeat,
+                label: 'Recurrentes',
+                color: Colors.purple,
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const GastosRecurrentesPage()),
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
