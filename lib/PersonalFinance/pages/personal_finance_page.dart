@@ -8,6 +8,7 @@ import 'metas_ahorro_page.dart';
 import 'gastos_recurrentes_page.dart';
 import 'personal_dashboard_page.dart';
 import 'add_personal_transaction_page.dart';
+import '../utils/personal_pdf.dart';
 
 class PersonalFinancePage extends StatefulWidget {
   const PersonalFinancePage({super.key});
@@ -35,6 +36,13 @@ class _PersonalFinancePageState extends State<PersonalFinancePage> {
       appBar: AppBar(
         title: const Text('Mis Finanzas'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.picture_as_pdf),
+            onPressed: () async {
+              await PersonalPdf.generaPdf(mes: _mesActual, anio: _anioActual);
+            },
+            tooltip: 'Exportar PDF',
+          ),
           IconButton(
             icon: const Icon(Icons.bar_chart),
             onPressed: () {
