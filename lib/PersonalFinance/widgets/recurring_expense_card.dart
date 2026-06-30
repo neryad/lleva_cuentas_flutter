@@ -47,11 +47,14 @@ class RecurringExpenseCard extends StatelessWidget {
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              formatter.format(monto),
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: activo ? null : Colors.grey,
+            Flexible(
+              child: Text(
+                formatter.format(monto),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: activo ? null : Colors.grey,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
             if (onToggle != null)

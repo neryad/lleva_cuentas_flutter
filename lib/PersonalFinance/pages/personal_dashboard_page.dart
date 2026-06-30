@@ -58,17 +58,19 @@ class _PersonalDashboardPageState extends State<PersonalDashboardPage> {
         }
 
         for (var t in transactions) {
-          final date = DateTime.parse(t.date);
-          final key = '${date.year}-${date.month.toString().padLeft(2, '0')}';
-          if (monthlyData.containsKey(key)) {
-            if (t.type == 'Ingreso' || t.type == 'Ahorro') {
-              monthlyData[key]!['ingresos'] =
-                  (monthlyData[key]!['ingresos'] ?? 0) + t.amount;
-            } else {
-              monthlyData[key]!['gastos'] =
-                  (monthlyData[key]!['gastos'] ?? 0) + t.amount;
+          try {
+            final date = DateTime.parse(t.date);
+            final key = '${date.year}-${date.month.toString().padLeft(2, '0')}';
+            if (monthlyData.containsKey(key)) {
+              if (t.type == 'Ingreso' || t.type == 'Ahorro') {
+                monthlyData[key]!['ingresos'] =
+                    (monthlyData[key]!['ingresos'] ?? 0) + t.amount;
+              } else {
+                monthlyData[key]!['gastos'] =
+                    (monthlyData[key]!['gastos'] ?? 0) + t.amount;
+              }
             }
-          }
+          } catch (_) {}
         }
 
         final barGroups = <BarChartGroupData>[];
@@ -300,23 +302,28 @@ class _PersonalDashboardPageState extends State<PersonalDashboardPage> {
 
         final transactions = snapshot.data ?? [];
         final now = DateTime.now();
-        final Map<int, double> monthlyBalance = {};
+        final Map<String, double> monthlyBalance = {};
+        final List<String> monthOrder = [];
 
         for (int i = 5; i >= 0; i--) {
           final month = DateTime(now.year, now.month - i, 1);
-          monthlyBalance[month.month] = 0;
+          final key = '${month.year}-${month.month.toString().padLeft(2, '0')}';
+          monthlyBalance[key] = 0;
+          monthOrder.add(key);
         }
 
         for (var t in transactions) {
-          final date = DateTime.parse(t.date);
-          final monthKey = date.month;
-          if (monthlyBalance.containsKey(monthKey)) {
-            if (t.type == 'Ingreso' || t.type == 'Ahorro') {
-              monthlyBalance[monthKey] = monthlyBalance[monthKey]! + t.amount;
-            } else {
-              monthlyBalance[monthKey] = monthlyBalance[monthKey]! - t.amount;
+          try {
+            final date = DateTime.parse(t.date);
+            final key = '${date.year}-${date.month.toString().padLeft(2, '0')}';
+            if (monthlyBalance.containsKey(key)) {
+              if (t.type == 'Ingreso' || t.type == 'Ahorro') {
+                monthlyBalance[key] = monthlyBalance[key]! + t.amount;
+              } else {
+                monthlyBalance[key] = monthlyBalance[key]! - t.amount;
+              }
             }
-          }
+          } catch (_) {}
         }
 
         final spots = <FlSpot>[];
@@ -324,11 +331,13 @@ class _PersonalDashboardPageState extends State<PersonalDashboardPage> {
         final months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
         int index = 0;
 
-        monthlyBalance.forEach((month, balance) {
+        for (final key in monthOrder) {
+          final balance = monthlyBalance[key]!;
           spots.add(FlSpot(index.toDouble(), balance));
-          monthLabels.add(months[month - 1]);
+          final monthNum = int.parse(key.split('-')[1]);
+          monthLabels.add(months[monthNum - 1]);
           index++;
-        });
+        }
 
         return Card(
           child: Padding(

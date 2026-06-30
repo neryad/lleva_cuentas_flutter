@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../utils/color_utils.dart';
 
 class SavingsGoalCard extends StatelessWidget {
   final String nombre;
@@ -23,18 +24,13 @@ class SavingsGoalCard extends StatelessWidget {
     this.onDelete,
   });
 
-  Color _hexToColor(String hex) {
-    hex = hex.replaceFirst('#', '');
-    return Color(int.parse('FF$hex', radix: 16));
-  }
-
   @override
   Widget build(BuildContext context) {
     final formatter = NumberFormat.currency(locale: 'es_MX', symbol: '\$');
     final progreso = montoObjetivo > 0
         ? (montoActual / montoObjetivo).clamp(0.0, 1.0)
         : 0.0;
-    final color = colorHex != null ? _hexToColor(colorHex!) : Colors.blue;
+    final color = colorHex != null ? hexToColor(colorHex!) : Colors.blue;
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),

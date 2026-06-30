@@ -18,7 +18,9 @@ class PersonalPdf {
         await DataBaseHelper.instance.getPersonalTransactions(mes: mes, anio: anio);
     final formatter = NumberFormat.currency(locale: 'es_MX', symbol: '\$');
     final now = DateTime.now();
-    final mesNombre = DateFormat('MMMM yyyy', 'es').format(now);
+    final mesNombre = DateFormat('MMMM yyyy', 'es').format(
+      DateTime(anio ?? now.year, mes ?? now.month),
+    );
 
     double ingresos = 0;
     double gastos = 0;

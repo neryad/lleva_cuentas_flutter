@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../utils/color_utils.dart';
 
 class BudgetProgressCard extends StatelessWidget {
   final String categoriaNombre;
@@ -15,11 +16,6 @@ class BudgetProgressCard extends StatelessWidget {
     required this.montoGastado,
   });
 
-  Color _hexToColor(String hex) {
-    hex = hex.replaceFirst('#', '');
-    return Color(int.parse('FF$hex', radix: 16));
-  }
-
   @override
   Widget build(BuildContext context) {
     final formatter = NumberFormat.currency(locale: 'es_MX', symbol: '\$');
@@ -27,7 +23,7 @@ class BudgetProgressCard extends StatelessWidget {
         ? (montoGastado / montoLimite).clamp(0.0, 1.0)
         : 0.0;
     final excedido = montoGastado > montoLimite;
-    final color = excedido ? Colors.red : _hexToColor(colorHex);
+    final color = excedido ? Colors.red : hexToColor(colorHex);
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
