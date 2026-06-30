@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
           title: 'Lleva Cuentas',
           debugShowCheckedModeBanner: false,
           theme: themeManager.getThemeData(),
-          home: const _AppStart(),
+          home: const MainScreen(),
           routes: {
             '/settings': (context) => const SettingsPage(),
             '/legal': (context) => const LegalPage(),
@@ -43,45 +43,6 @@ class MyApp extends StatelessWidget {
         );
       },
     );
-  }
-}
-
-class _AppStart extends StatefulWidget {
-  const _AppStart();
-
-  @override
-  State<_AppStart> createState() => _AppStartState();
-}
-
-class _AppStartState extends State<_AppStart> {
-  bool _loading = true;
-  bool _onboardingComplete = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _checkOnboarding();
-  }
-
-  void _checkOnboarding() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _onboardingComplete = prefs.getBool('onboarding_complete') ?? false;
-      _loading = false;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (_loading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
-    }
-    if (!_onboardingComplete) {
-      return const OnboardingPage();
-    }
-    return const MainScreen();
   }
 }
 
@@ -99,6 +60,25 @@ class _MainScreenState extends State<MainScreen> {
     const PersonalFinancePage(),
     const HomePage(),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _checkOnboarding();
+  }
+
+  void _checkOnboarding() async {
+    final prefs = await SharedPreferences.getInstance();
+    final complete = prefs.getBool('onboarding_complete') ?? false;
+    if (!complete && mounted) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          fullscreenDialog: true,
+          builder: (_) => const OnboardingPage(),
+        ),
+      ).then((_) => setState(() {}));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
