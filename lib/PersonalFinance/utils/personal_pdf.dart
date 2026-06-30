@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -7,6 +8,12 @@ import '../../utils/file_handle_api.dart';
 class PersonalPdf {
   static Future<void> generaPdf({int? mes, int? anio}) async {
     final pdf = pw.Document();
+
+    final fontData = await rootBundle.load('assets/fonts/Arial.ttf');
+    final fontBoldData = await rootBundle.load('assets/fonts/ArialBold.ttf');
+    final font = pw.Font.ttf(fontData);
+    final fontBold = pw.Font.ttf(fontBoldData);
+
     final transactions =
         await DataBaseHelper.instance.getPersonalTransactions(mes: mes, anio: anio);
     final formatter = NumberFormat.currency(locale: 'es_MX', symbol: '\$');
@@ -31,7 +38,7 @@ class PersonalPdf {
             pw.Header(
               level: 0,
               child: pw.Text('Finanzas Personales - $mesNombre',
-                  style: pw.TextStyle(fontSize: 20)),
+                  style: pw.TextStyle(font: fontBold, fontSize: 20)),
             ),
             pw.SizedBox(height: 10),
             pw.Row(
@@ -39,35 +46,37 @@ class PersonalPdf {
               children: [
                 pw.Column(
                   children: [
-                    pw.Text('Ingresos', style: pw.TextStyle(fontSize: 12)),
+                    pw.Text('Ingresos', style: pw.TextStyle(font: font, fontSize: 12)),
                     pw.Text(formatter.format(ingresos),
                         style: pw.TextStyle(
-                            fontSize: 14, color: PdfColors.green)),
+                            font: fontBold, fontSize: 14, color: PdfColors.green)),
                   ],
                 ),
                 pw.Column(
                   children: [
-                    pw.Text('Gastos', style: pw.TextStyle(fontSize: 12)),
+                    pw.Text('Gastos', style: pw.TextStyle(font: font, fontSize: 12)),
                     pw.Text(formatter.format(gastos),
-                        style: pw.TextStyle(fontSize: 14, color: PdfColors.red)),
+                        style: pw.TextStyle(font: fontBold, fontSize: 14, color: PdfColors.red)),
                   ],
                 ),
                 pw.Column(
                   children: [
-                    pw.Text('Balance', style: pw.TextStyle(fontSize: 12)),
+                    pw.Text('Balance', style: pw.TextStyle(font: font, fontSize: 12)),
                     pw.Text(formatter.format(ingresos - gastos),
                         style: pw.TextStyle(
-                            fontSize: 14, color: PdfColors.blue)),
+                            font: fontBold, fontSize: 14, color: PdfColors.blue)),
                   ],
                 ),
               ],
             ),
             pw.SizedBox(height: 20),
             pw.TableHelper.fromTextArray(
+              headerStyle: pw.TextStyle(font: fontBold, fontSize: 11),
+              cellStyle: pw.TextStyle(font: font, fontSize: 10),
               headers: ['Descripción', 'Fecha', 'Tipo', 'Monto'],
               data: transactions.map((t) => [
                     t.comment.isNotEmpty ? t.comment : t.type,
-                    t.date.substring(0, 10),
+                    t.date.length >= 10 ? t.date.substring(0, 10) : t.date,
                     t.type,
                     formatter.format(t.amount),
                   ]).toList(),
