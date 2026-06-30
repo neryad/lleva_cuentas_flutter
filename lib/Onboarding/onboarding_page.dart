@@ -37,7 +37,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('onboarding_complete', true);
     if (mounted) {
-      Navigator.of(context).pushReplacementNamed('/');
+      Navigator.of(context).pop();
     }
   }
 

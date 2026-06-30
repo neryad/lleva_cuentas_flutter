@@ -36,7 +36,6 @@ class MyApp extends StatelessWidget {
           theme: themeManager.getThemeData(),
           home: const _AppStart(),
           routes: {
-            '/': (context) => const MainScreen(),
             '/settings': (context) => const SettingsPage(),
             '/legal': (context) => const LegalPage(),
             '/about': (context) => const AboutPage(),
