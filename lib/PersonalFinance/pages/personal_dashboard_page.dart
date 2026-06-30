@@ -68,28 +68,23 @@ class _PersonalDashboardPageState extends State<PersonalDashboardPage> {
           }
         }
 
-        final ingresosData = <BarChartGroupData>[];
-        final gastosData = <BarChartGroupData>[];
+        final barGroups = <BarChartGroupData>[];
         int index = 0;
 
         monthlyData.forEach((month, data) {
-          ingresosData.add(BarChartGroupData(
+          barGroups.add(BarChartGroupData(
             x: index,
+            barsSpace: 4,
             barRods: [
               BarChartRodData(
                 toY: data['ingresos']!,
                 color: Colors.green,
-                width: 12,
+                width: 10,
               ),
-            ],
-          ));
-          gastosData.add(BarChartGroupData(
-            x: index,
-            barRods: [
               BarChartRodData(
                 toY: data['gastos']!,
                 color: Colors.red,
-                width: 12,
+                width: 10,
               ),
             ],
           ));
@@ -113,18 +108,21 @@ class _PersonalDashboardPageState extends State<PersonalDashboardPage> {
                     BarChartData(
                       alignment: BarChartAlignment.spaceAround,
                       maxY: _getMaxValue(monthlyData) * 1.2,
-                      barGroups: [
-                        ...ingresosData,
-                        ...gastosData,
-                      ],
+                      barGroups: barGroups,
                       titlesData: FlTitlesData(
+                        topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                        rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
                         bottomTitles: AxisTitles(
                           sideTitles: SideTitles(
                             showTitles: true,
                             getTitlesWidget: (value, meta) {
+                              final i = value.toInt();
                               final months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'];
-                              if (value.toInt() < months.length) {
-                                return Text(months[value.toInt()]);
+                              if (i >= 0 && i < months.length) {
+                                return Padding(
+                                  padding: const EdgeInsets.only(top: 8),
+                                  child: Text(months[i], style: const TextStyle(fontSize: 11)),
+                                );
                               }
                               return const Text('');
                             },
@@ -135,7 +133,7 @@ class _PersonalDashboardPageState extends State<PersonalDashboardPage> {
                             showTitles: true,
                             reservedSize: 40,
                             getTitlesWidget: (value, meta) {
-                              return Text('\$${value.toInt()}');
+                              return Text('\$${value.toInt()}', style: const TextStyle(fontSize: 11));
                             },
                           ),
                         ),
@@ -337,13 +335,18 @@ class _PersonalDashboardPageState extends State<PersonalDashboardPage> {
                     LineChartData(
                       gridData: const FlGridData(show: false),
                       titlesData: FlTitlesData(
+                        topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                        rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
                         bottomTitles: AxisTitles(
                           sideTitles: SideTitles(
                             showTitles: true,
                             getTitlesWidget: (value, meta) {
                               final i = value.toInt();
-                              if (i < monthLabels.length) {
-                                return Text(monthLabels[i]);
+                              if (i >= 0 && i < monthLabels.length) {
+                                return Padding(
+                                  padding: const EdgeInsets.only(top: 8),
+                                  child: Text(monthLabels[i], style: const TextStyle(fontSize: 11)),
+                                );
                               }
                               return const Text('');
                             },
@@ -354,7 +357,7 @@ class _PersonalDashboardPageState extends State<PersonalDashboardPage> {
                             showTitles: true,
                             reservedSize: 40,
                             getTitlesWidget: (value, meta) {
-                              return Text('\$${value.toInt()}');
+                              return Text('\$${value.toInt()}', style: const TextStyle(fontSize: 11));
                             },
                           ),
                         ),
