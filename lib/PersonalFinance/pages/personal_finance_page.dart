@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../../Database/data_base_servie.dart';
 import '../../Amount/pages/models/transactions_model.dart';
 import '../widgets/summary_card.dart';
@@ -51,6 +52,24 @@ class _PersonalFinancePageState extends State<PersonalFinancePage> {
       body: FutureBuilder<List<Transactions>>(
         future: _db.getPersonalTransactions(mes: _mesActual, anio: _anioActual),
         builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.error_outline, color: Colors.red, size: 48),
+                  const SizedBox(height: 16),
+                  Text('Error: ${snapshot.error}'),
+                  const SizedBox(height: 16),
+                  ElevatedButton.icon(
+                    onPressed: () => setState(() {}),
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Reintentar'),
+                  ),
+                ],
+              ),
+            );
+          }
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
@@ -204,7 +223,7 @@ class _PersonalFinancePageState extends State<PersonalFinancePage> {
       title: Text(t.comment.isNotEmpty ? t.comment : t.type),
       subtitle: Text(t.date.substring(0, 10)),
       trailing: Text(
-        '${isIncome ? '+' : '-'}\$${t.amount.toStringAsFixed(2)}',
+        '${isIncome ? '+' : '-'}${NumberFormat.currency(locale: 'es_MX', symbol: '\$').format(t.amount)}',
         style: TextStyle(
           fontWeight: FontWeight.bold,
           color: isIncome ? Colors.green : Colors.red,
