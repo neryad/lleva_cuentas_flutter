@@ -44,6 +44,7 @@ dependencies:
   sqlite3_flutter_libs: ^0.5.40
   url_launcher: ^6.3.2
   flutter_markdown: ^0.7.3
+  upgrader: ^13.5.0
 dev_dependencies:
   flutter_launcher_icons: ^0.14.4
 
