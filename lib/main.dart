@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'theme_manager.dart';
 import 'Home/pages/home_page.dart';
 import 'PersonalFinance/pages/personal_finance_page.dart';
@@ -9,6 +10,7 @@ import 'about/pages/about.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await initializeDateFormatting('es');
   final themeManager = ThemeManager();
 
   runApp(
