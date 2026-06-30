@@ -177,11 +177,17 @@ class _MetasAhorroPageState extends State<MetasAhorroPage> {
               onPressed: () async {
                 if (montoController.text.isNotEmpty) {
                   final monto = double.parse(montoController.text);
-                  meta.montoActual += monto;
-                  if (meta.montoActual >= meta.montoObjetivo) {
-                    meta.completada = true;
-                  }
-                  await _db.updateMetaAhorro(meta);
+                  final nuevoMonto = meta.montoActual + monto;
+                  final actualizado = MetaAhorro(
+                    id: meta.id,
+                    nombre: meta.nombre,
+                    montoObjetivo: meta.montoObjetivo,
+                    montoActual: nuevoMonto,
+                    fechaLimite: meta.fechaLimite,
+                    color: meta.color,
+                    completada: nuevoMonto >= meta.montoObjetivo,
+                  );
+                  await _db.updateMetaAhorro(actualizado);
                   if (mounted) {
                     Navigator.pop(context);
                     setState(() {});

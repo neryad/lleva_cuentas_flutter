@@ -47,23 +47,26 @@ class _PersonalDashboardPageState extends State<PersonalDashboardPage> {
 
         final transactions = snapshot.data ?? [];
         final now = DateTime.now();
-        final Map<int, Map<String, double>> monthlyData = {};
+        final Map<String, Map<String, double>> monthlyData = {};
+        final List<String> monthOrder = [];
 
         for (int i = 5; i >= 0; i--) {
           final month = DateTime(now.year, now.month - i, 1);
-          monthlyData[month.month] = {'ingresos': 0, 'gastos': 0};
+          final key = '${month.year}-${month.month.toString().padLeft(2, '0')}';
+          monthlyData[key] = {'ingresos': 0, 'gastos': 0};
+          monthOrder.add(key);
         }
 
         for (var t in transactions) {
           final date = DateTime.parse(t.date);
-          final monthKey = date.month;
-          if (monthlyData.containsKey(monthKey)) {
+          final key = '${date.year}-${date.month.toString().padLeft(2, '0')}';
+          if (monthlyData.containsKey(key)) {
             if (t.type == 'Ingreso' || t.type == 'Ahorro') {
-              monthlyData[monthKey]!['ingresos'] =
-                  (monthlyData[monthKey]!['ingresos'] ?? 0) + t.amount;
+              monthlyData[key]!['ingresos'] =
+                  (monthlyData[key]!['ingresos'] ?? 0) + t.amount;
             } else {
-              monthlyData[monthKey]!['gastos'] =
-                  (monthlyData[monthKey]!['gastos'] ?? 0) + t.amount;
+              monthlyData[key]!['gastos'] =
+                  (monthlyData[key]!['gastos'] ?? 0) + t.amount;
             }
           }
         }
@@ -71,7 +74,8 @@ class _PersonalDashboardPageState extends State<PersonalDashboardPage> {
         final barGroups = <BarChartGroupData>[];
         int index = 0;
 
-        monthlyData.forEach((month, data) {
+        for (final key in monthOrder) {
+          final data = monthlyData[key]!;
           barGroups.add(BarChartGroupData(
             x: index,
             barsSpace: 4,
@@ -89,7 +93,16 @@ class _PersonalDashboardPageState extends State<PersonalDashboardPage> {
             ],
           ));
           index++;
-        });
+        }
+
+        final allMonthNames = [
+          'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+          'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'
+        ];
+        final bottomLabels = monthOrder.map((key) {
+          final monthNum = int.parse(key.split('-')[1]);
+          return allMonthNames[monthNum - 1];
+        }).toList();
 
         return Card(
           child: Padding(
@@ -117,11 +130,10 @@ class _PersonalDashboardPageState extends State<PersonalDashboardPage> {
                             showTitles: true,
                             getTitlesWidget: (value, meta) {
                               final i = value.toInt();
-                              final months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'];
-                              if (i >= 0 && i < months.length) {
+                              if (i >= 0 && i < bottomLabels.length) {
                                 return Padding(
                                   padding: const EdgeInsets.only(top: 8),
-                                  child: Text(months[i], style: const TextStyle(fontSize: 11)),
+                                  child: Text(bottomLabels[i], style: const TextStyle(fontSize: 11)),
                                 );
                               }
                               return const Text('');

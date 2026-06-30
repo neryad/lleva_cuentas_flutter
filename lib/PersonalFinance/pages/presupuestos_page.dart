@@ -62,23 +62,31 @@ class _PresupuestosPageState extends State<PresupuestosPage> {
             );
           }
 
-          return ListView.builder(
-            itemCount: presupuestos.length,
-            itemBuilder: (context, index) {
-              final p = presupuestos[index];
-              final cat = _categorias.firstWhere(
-                (c) => c.id == p.categoriaId,
-                orElse: () => Category(
-                  nombre: 'Sin categoría',
-                  tipo: 'General',
-                  color: '#9E9E9E',
-                ),
-              );
-              return BudgetProgressCard(
-                categoriaNombre: cat.nombre,
-                colorHex: cat.color,
-                montoLimite: p.montoLimite,
-                montoGastado: 0,
+          return FutureBuilder<Map<int, double>>(
+            future: _db.getGastosPorCategoria(_mes, _anio),
+            builder: (context, gastosSnapshot) {
+              final gastosPorCategoria = gastosSnapshot.data ?? {};
+
+              return ListView.builder(
+                itemCount: presupuestos.length,
+                itemBuilder: (context, index) {
+                  final p = presupuestos[index];
+                  final cat = _categorias.firstWhere(
+                    (c) => c.id == p.categoriaId,
+                    orElse: () => Category(
+                      nombre: 'Sin categoría',
+                      tipo: 'General',
+                      color: '#9E9E9E',
+                    ),
+                  );
+                  final gastado = gastosPorCategoria[p.categoriaId] ?? 0;
+                  return BudgetProgressCard(
+                    categoriaNombre: cat.nombre,
+                    colorHex: cat.color,
+                    montoLimite: p.montoLimite,
+                    montoGastado: gastado,
+                  );
+                },
               );
             },
           );

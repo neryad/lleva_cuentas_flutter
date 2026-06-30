@@ -464,4 +464,16 @@ class DataBaseHelper {
     }
     return balance;
   }
+
+  Future<Map<int, double>> getGastosPorCategoria(int mes, int anio) async {
+    final transactions = await getPersonalTransactions(mes: mes, anio: anio);
+    final Map<int, double> gastosPorCategoria = {};
+    for (var t in transactions) {
+      if (t.type == 'Gasto' && t.categoriaId != null) {
+        gastosPorCategoria[t.categoriaId!] =
+            (gastosPorCategoria[t.categoriaId!] ?? 0) + t.amount;
+      }
+    }
+    return gastosPorCategoria;
+  }
 }
