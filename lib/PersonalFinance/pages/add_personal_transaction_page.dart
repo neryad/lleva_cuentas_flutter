@@ -93,7 +93,7 @@ class _AddPersonalTransactionPageState extends State<AddPersonalTransactionPage>
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<int>(
-                initialValue: _selectedCategoryId,
+                value: _selectedCategoryId,
                 decoration: const InputDecoration(
                   labelText: 'Categoría',
                   border: OutlineInputBorder(),
