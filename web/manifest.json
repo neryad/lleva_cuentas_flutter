@@ -1,11 +1,11 @@
 {
-    "name": "lleva_cuentas",
-    "short_name": "lleva_cuentas",
+    "name": "Lleva Cuentas",
+    "short_name": "Lleva Cuentas",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#hexcode",
-    "theme_color": "#hexcode",
-    "description": "A new Flutter project.",
+    "background_color": "#1a8a5c",
+    "theme_color": "#1a8a5c",
+    "description": "App de finanzas personales. Registra ingresos y gastos, crea categorías y genera reportes en PDF, todo de forma local y segura en tu dispositivo.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
