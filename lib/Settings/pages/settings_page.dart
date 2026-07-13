@@ -106,8 +106,8 @@ class _SettingsPageState extends State<SettingsPage> {
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
                         gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 4,
+                            const SliverGridDelegateWithMaxCrossAxisExtent(
+                          maxCrossAxisExtent: 80,
                           mainAxisSpacing: 12,
                           crossAxisSpacing: 12,
                         ),

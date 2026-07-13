@@ -96,13 +96,16 @@ class AboutPage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      GridView.count(
-                        crossAxisCount: 3,
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        mainAxisSpacing: 12,
-                        crossAxisSpacing: 12,
-                        children: [
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          final crossAxisCount = constraints.maxWidth > 400 ? 3 : 2;
+                          return GridView.count(
+                            crossAxisCount: crossAxisCount,
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            mainAxisSpacing: 12,
+                            crossAxisSpacing: 12,
+                            children: [
                           _socialButton(
                             context,
                             icon: Icons.business,
@@ -146,6 +149,8 @@ class AboutPage extends StatelessWidget {
                             colorScheme: colorScheme,
                           ),
                         ],
+                      );
+                        },
                       ),
                     ],
                   ),
