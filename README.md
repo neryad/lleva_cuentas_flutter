@@ -5,7 +5,7 @@
 # Lleva Cuentas [![Codemagic build status](https://api.codemagic.io/apps/660ef805c47054341ffb6c68/660ef805c47054341ffb6c67/status_badge.svg)](https://codemagic.io/apps/660ef805c47054341ffb6c68/660ef805c47054341ffb6c67/latest_build)
 
 [![Built with Flutter](https://img.shields.io/badge/Built_with-Flutter-blue.svg)](https://flutter.dev/)
-![Version](https://img.shields.io/badge/Version-1.5.0-blue)
+![Version](https://img.shields.io/badge/Version-1.6.0-blue)
 ![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![Platform](https://img.shields.io/badge/Platform-Android%20|%20Web-orange)
@@ -37,6 +37,12 @@ Lleva Cuentas is a Flutter-based application designed to help users track their 
 - **In-App Updates**: Automatic version checking with update notifications (via `upgrader` package).
 - **Error Handling**: Consistent error messages in Spanish with retry functionality.
 - **Responsive Design**: Adaptive layouts for different screen sizes.
+
+### Legal & Privacy (v1.6.0)
+- **Arbitration Clause**: Individual binding arbitration with class action waiver included in Terms of Service.
+- **CCPA & GDPR Compliance**: Privacy notices for California residents and EU users.
+- **MIT License**: Standard MIT license file included in repository.
+- **Privacy Policy**: Detailed policy confirming all data is stored locally with no third-party sharing.
 
 ## Installation
 

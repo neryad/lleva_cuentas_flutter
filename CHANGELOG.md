@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.0] - 2026-07-13
+
+### Added
+- **Legal Compliance**:
+  - Binding individual arbitration clause (Section 2.6) with class action waiver and 30-day opt-out
+  - CCPA privacy notice for California residents (Section 1.1)
+  - GDPR notice for EEA users (Section 1.2)
+  - MIT LICENSE file in repository root
+- **Metadata**:
+  - Updated web manifest (`name`, `description`, `theme_color`)
+  - Updated `index.html` title and meta description
+  - Updated `pubspec.yaml` description
+
+### Changed
+- Bumped version to 1.6.0+20
+- Updated `POLITICAS_Y_TERMINOS.md` with full legal review changes
+
 ## [1.5.0] - 2026-06-30
 
 ### Added
