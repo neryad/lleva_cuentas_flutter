@@ -14,6 +14,7 @@ class Transactions {
     required this.comment,
     required this.accountId,
     this.categoriaId,
+    this.source = 'cuenta',
   });
 
   int? id;
@@ -23,6 +24,7 @@ class Transactions {
   String comment;
   int accountId;
   int? categoriaId;
+  String source;
 
   isSaving() => type == 'Ahorro' || type == 'Ingreso';
 
@@ -34,6 +36,7 @@ class Transactions {
         comment: json["comment"],
         accountId: json["accountId"],
         categoriaId: json["categoria_id"],
+        source: json["source"] as String? ?? 'cuenta',
       );
 
   Map<String, dynamic> toJson() => {
@@ -44,5 +47,6 @@ class Transactions {
         "comment": comment,
         "accountId": accountId,
         "categoria_id": categoriaId,
+        "source": source,
       };
 }

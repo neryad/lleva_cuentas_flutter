@@ -779,13 +779,16 @@ class _DetailsPageState extends State<DetailsPage> {
                           ),
                         ),
                         const SizedBox(height: 12),
-                        Text(
-                          '\u0024 $total2',
-                          style: TextStyle(
-                            color: colorScheme.onSurface,
-                            fontSize: 48,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1.5,
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            '\u0024 $total2',
+                            style: TextStyle(
+                              color: colorScheme.onSurface,
+                              fontSize: 48,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1.5,
+                            ),
                           ),
                         ),
                         const SizedBox(height: 24),
